@@ -2,32 +2,46 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
+* { box-sizing: border-box; }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+html {
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background-color: #F7F4EE;
+  color: #1a1a14;
 }
 
+::selection {
+  background: #C0DD97;
+  color: #1f3d0c;
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #F7F4EE; }
+::-webkit-scrollbar-thumb { background: #C0DD97; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #3B6D11; }
+
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  .text-balance { text-wrap: balance; }
+}
+
+@layer components {
+  .input {
+    @apply w-full border border-[#5C4A2A]/20 rounded-xl px-3 py-2.5 text-sm bg-white
+           text-[#1f3d0c] placeholder:text-[#6b6b58]/60
+           focus:outline-none focus:border-[#3B6D11] focus:ring-2 focus:ring-[#3B6D11]/20
+           transition-colors;
+  }
+  .textarea {
+    @apply input resize-none;
+  }
+  .label {
+    @apply block text-xs font-medium text-[#1f3d0c] mb-1.5 tracking-wide;
+  }
+  .card {
+    @apply bg-white border border-[#5C4A2A]/10 rounded-2xl shadow-sm;
   }
 }

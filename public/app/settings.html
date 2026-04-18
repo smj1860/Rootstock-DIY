@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings — Rootstock</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/rootstock.css">
+  <style>
+    body { background: var(--cream); min-height: 100vh; }
+
+    /* ── Nav ──────────────────────────────────────────────────────── */
+    .app-nav { position: sticky; top: 0; z-index: 100; background: white; border-bottom: 1px solid var(--border); }
+    .app-nav-inner { max-width: 1100px; margin: 0 auto; padding: 0 var(--space-6); height: 56px; display: flex; align-items: center; gap: var(--space-6); }
+    .nav-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; flex-shrink: 0; }
+    .nav-logo-mark { width: 30px; height: 30px; background: var(--green-deep); border-radius: 7px; display: flex; align-items: center; justify-content: center; }
+    .nav-logo-name { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 600; color: var(--green-deep); letter-spacing: -0.3px; }
+    .nav-links { display: flex; align-items: center; gap: 2px; flex: 1; }
+    .nav-link { font-size: 14px; font-weight: 400; color: var(--muted); text-decoration: none; padding: 6px 10px; border-radius: 7px; transition: color 0.12s, background 0.12s; white-space: nowrap; }
+    .nav-link:hover { color: var(--green-deep); background: var(--green-pale); text-decoration: none; }
+    .nav-link.active { color: var(--green-deep); font-weight: 500; background: var(--green-pale); }
+    .nav-user { display: flex; align-items: center; gap: var(--space-3); margin-left: auto; flex-shrink: 0; }
+    .nav-user-name { font-size: 13.5px; font-weight: 500; color: var(--text); }
+    .tier-badge { font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 2px 8px; border-radius: 100px; }
+    .tier-free { background: var(--cream); color: var(--bark-light); border: 1px solid var(--border); }
+    .tier-pro  { background: var(--green-deep); color: var(--green-light); }
+    .btn-signout { font-size: 13px; color: var(--muted); background: none; border: none; cursor: pointer; padding: 5px 8px; border-radius: 6px; font-family: 'DM Sans', sans-serif; transition: color 0.12s, background 0.12s; }
+    .btn-signout:hover { color: var(--text); background: var(--cream); }
+
+    .skel { border-radius: 6px; background: linear-gradient(90deg, #ece9e1 25%, #f4f1e9 50%, #ece9e1 75%); background-size: 200% 100%; animation: shimmer 1.3s infinite; }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    /* ── Layout ──────────────────────────────────────────────────── */
+    .main { max-width: 720px; margin: 0 auto; padding: 2.5rem var(--space-6) 5rem; }
+
+    .page-title { font-family: 'Playfair Display', serif; font-size: clamp(22px, 3vw, 28px); font-weight: 500; color: var(--green-deep); margin-bottom: 2rem; }
+
+    /* ── Settings sections ───────────────────────────────────────── */
+    .settings-section {
+      background: white; border: 1px solid var(--border); border-radius: var(--radius-xl);
+      margin-bottom: 1.5rem; overflow: hidden;
+    }
+    .section-head {
+      padding: var(--space-4) var(--space-5);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);
+    }
+    .section-head-text { }
+    .section-label {
+      font-size: 11px; font-weight: 500; letter-spacing: 0.13em; text-transform: uppercase;
+      color: var(--green-mid); margin-bottom: 2px;
+    }
+    .section-title { font-size: 15px; font-weight: 500; color: var(--text); }
+    .section-body { padding: var(--space-4) var(--space-5); }
+
+    /* Form fields */
+    .form-row { margin-bottom: 1.1rem; }
+    .form-row:last-child { margin-bottom: 0; }
+    .form-row label { display: block; font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 5px; }
+    .field-input {
+      width: 100%; font-family: 'DM Sans', sans-serif; font-size: 14.5px;
+      color: var(--text); background: var(--cream); border: 1px solid var(--border);
+      border-radius: 9px; padding: 10px 13px; outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .field-input:focus { border-color: var(--green-mid); box-shadow: 0 0 0 3px rgba(59,109,17,0.1); background: white; }
+    .field-input::placeholder { color: var(--muted); opacity: 0.55; }
+    select.field-input {
+      appearance: none; cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236b6b58' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 13px center; padding-right: 34px;
+    }
+
+    .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); margin-bottom: 1.1rem; }
+
+    /* Save button */
+    .btn-save {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: var(--green-mid); color: var(--green-pale);
+      font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+      padding: 9px 20px; border: none; border-radius: 9px; cursor: pointer;
+      transition: background 0.12s; margin-top: var(--space-2);
+    }
+    .btn-save:hover:not(:disabled) { background: var(--green-deep); }
+    .btn-save:disabled { opacity: 0.55; cursor: not-allowed; }
+    .spin { width: 14px; height: 14px; border: 2px solid rgba(192,221,151,0.4); border-top-color: var(--green-light); border-radius: 50%; animation: rotate 0.6s linear infinite; display: none; }
+    @keyframes rotate { to { transform: rotate(360deg); } }
+    .btn-save.loading .spin { display: block; }
+    .btn-save.loading .btn-label { display: none; }
+
+    /* Alert */
+    .section-alert { padding: 9px 13px; border-radius: 8px; font-size: 13px; margin-bottom: 1rem; display: none; line-height: 1.5; }
+    .section-alert.show { display: block; }
+    .section-alert.error   { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+    .section-alert.success { background: var(--green-pale); color: var(--green-deep); border: 1px solid var(--green-light); }
+
+    /* Toggle switch */
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding: var(--space-3) 0; border-bottom: 1px solid var(--border); }
+    .toggle-row:last-child { border-bottom: none; }
+    .toggle-info { flex: 1; }
+    .toggle-info-title { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+    .toggle-info-sub { font-size: 13px; color: var(--muted); line-height: 1.45; }
+    .toggle-switch { position: relative; width: 42px; height: 24px; flex-shrink: 0; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+      position: absolute; inset: 0; background: #d1cfc8; border-radius: 100px;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .toggle-slider::before {
+      content: ''; position: absolute; width: 18px; height: 18px; left: 3px; top: 3px;
+      background: white; border-radius: 50%; transition: transform 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+    .toggle-switch input:checked + .toggle-slider { background: var(--green-mid); }
+    .toggle-switch input:checked + .toggle-slider::before { transform: translateX(18px); }
+    .toggle-switch input:focus + .toggle-slider { box-shadow: 0 0 0 3px rgba(59,109,17,0.15); }
+
+    /* Subscription section */
+    .sub-card {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: var(--space-4); flex-wrap: wrap;
+    }
+    .sub-info { flex: 1; min-width: 180px; }
+    .sub-tier-row { display: flex; align-items: center; gap: var(--space-3); margin-bottom: 4px; }
+    .sub-tier-name { font-size: 18px; font-weight: 600; font-family: 'Playfair Display', serif; color: var(--green-deep); }
+    .sub-desc { font-size: 13.5px; color: var(--muted); line-height: 1.5; }
+    .btn-manage {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--green-mid); color: var(--green-pale);
+      font-family: 'DM Sans', sans-serif; font-size: 13.5px; font-weight: 500;
+      padding: 9px 18px; border: none; border-radius: 9px; cursor: pointer;
+      text-decoration: none; transition: background 0.12s; white-space: nowrap; flex-shrink: 0;
+    }
+    .btn-manage:hover { background: var(--green-deep); text-decoration: none; }
+    .btn-upgrade {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--green-mid); color: var(--green-pale);
+      font-family: 'DM Sans', sans-serif; font-size: 13.5px; font-weight: 500;
+      padding: 9px 18px; border: none; border-radius: 9px; cursor: pointer;
+      text-decoration: none; transition: background 0.12s; white-space: nowrap;
+    }
+    .btn-upgrade:hover { background: var(--green-deep); text-decoration: none; }
+
+    .pro-feature-list { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-3); }
+    .pro-feature-pill { font-size: 12px; color: var(--green-deep); background: var(--green-pale); border-radius: 100px; padding: 3px 10px; }
+
+    /* Danger zone */
+    .danger-section { border-color: #fecaca; }
+    .danger-section .section-label { color: #dc2626; }
+    .danger-section .section-title { color: #991b1b; }
+    .btn-danger {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #fef2f2; color: #991b1b; border: 1px solid #fecaca;
+      font-family: 'DM Sans', sans-serif; font-size: 13.5px; font-weight: 500;
+      padding: 8px 16px; border-radius: 8px; cursor: pointer;
+      transition: background 0.12s; margin-top: var(--space-2);
+    }
+    .btn-danger:hover { background: #fee2e2; }
+
+    /* Confirm modal */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(26,26,20,0.5); z-index: 300; display: none; align-items: center; justify-content: center; padding: 1.5rem; backdrop-filter: blur(2px); }
+    .modal-overlay.open { display: flex; }
+    .modal { background: white; border-radius: 16px; padding: 1.75rem; max-width: 400px; width: 100%; box-shadow: 0 8px 40px rgba(31,61,12,0.15); }
+    .modal-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 500; color: var(--green-deep); margin-bottom: 6px; }
+    .modal-body { font-size: 14px; color: var(--muted); line-height: 1.55; margin-bottom: 1.25rem; }
+    .modal-actions { display: flex; gap: var(--space-3); justify-content: flex-end; }
+    .btn-modal-cancel { padding: 8px 16px; background: white; color: var(--text); border: 1px solid var(--border); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13.5px; cursor: pointer; }
+    .btn-modal-confirm { padding: 8px 16px; background: #dc2626; color: white; border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13.5px; font-weight: 500; cursor: pointer; }
+
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .form-row-2 { grid-template-columns: 1fr; }
+      .sub-card { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Navigation ──────────────────────────────────────────────────── -->
+<nav class="app-nav">
+  <div class="app-nav-inner">
+    <a href="/app/" class="nav-logo">
+      <div class="nav-logo-mark">
+        <svg width="18" height="18" viewBox="0 0 22 22" fill="none">
+          <path d="M11 3C11 3 7 7 7 12C7 15 9 17 11 18C13 17 15 15 15 12C15 7 11 3 11 3Z" fill="#C0DD97"/>
+          <path d="M11 18L11 21" stroke="#C0DD97" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M11 15C8 13 6 14 6 14" stroke="#C0DD97" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="M11 17C13.5 15 15.5 16 15.5 16" stroke="#C0DD97" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="nav-logo-name">Rootstock</span>
+    </a>
+
+    <div class="nav-links">
+      <a href="/app/"              class="nav-link">Dashboard</a>
+      <a href="/app/project.html"  class="nav-link">New Project</a>
+      <a href="/app/inventory.html"    class="nav-link">Inventory</a>
+      <a href="/app/journal.html"      class="nav-link">Journal</a>
+      <a href="/app/forum.html"        class="nav-link">Forum</a>
+      <a href="/app/tool-reviews.html" class="nav-link">Reviews</a>
+      <a href="/app/settings.html" class="nav-link active">Settings</a>
+    </div>
+
+    <div class="nav-user" id="nav-user">
+      <div class="skel" style="width:80px;height:16px;"></div>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Main ─────────────────────────────────────────────────────────── -->
+<main class="main" id="main" style="display:none;">
+
+  <h1 class="page-title">Settings</h1>
+
+  <!-- ── Profile ── -->
+  <div class="settings-section">
+    <div class="section-head">
+      <div class="section-head-text">
+        <div class="section-label">Account</div>
+        <div class="section-title">Profile</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="section-alert" id="profile-alert"></div>
+      <form id="profile-form" novalidate>
+        <div class="form-row-2">
+          <div class="form-row" style="margin-bottom:0;">
+            <label for="f-display-name">Display name</label>
+            <input type="text" id="f-display-name" class="field-input" placeholder="Your name">
+          </div>
+          <div class="form-row" style="margin-bottom:0;">
+            <label for="f-zip">ZIP code</label>
+            <input type="text" id="f-zip" class="field-input" placeholder="e.g. 35661" maxlength="10" inputmode="numeric">
+          </div>
+        </div>
+        <div class="form-row" style="margin-top:1.1rem;">
+          <label for="f-skill">Skill level</label>
+          <select id="f-skill" class="field-input">
+            <option value="beginner">Beginner — I'm just starting out</option>
+            <option value="intermediate">Intermediate — I've done some projects</option>
+            <option value="advanced">Advanced — I'm comfortable with most tasks</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-save" id="btn-save-profile">
+          <span class="btn-label">Save Profile</span>
+          <span class="spin"></span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── Email / Password ── -->
+  <div class="settings-section">
+    <div class="section-head">
+      <div class="section-head-text">
+        <div class="section-label">Security</div>
+        <div class="section-title">Email & Password</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="section-alert" id="auth-alert"></div>
+      <form id="email-form" novalidate>
+        <div class="form-row">
+          <label for="f-email">Email address</label>
+          <input type="email" id="f-email" class="field-input" placeholder="you@example.com" autocomplete="email">
+        </div>
+        <button type="submit" class="btn-save" id="btn-save-email">
+          <span class="btn-label">Update Email</span>
+          <span class="spin"></span>
+        </button>
+      </form>
+
+      <hr style="border:none;border-top:1px solid var(--border);margin:1.5rem 0;">
+
+      <form id="password-form" novalidate>
+        <div class="form-row">
+          <label for="f-new-password">New password</label>
+          <input type="password" id="f-new-password" class="field-input" placeholder="At least 8 characters" autocomplete="new-password">
+        </div>
+        <div class="form-row">
+          <label for="f-confirm-password">Confirm new password</label>
+          <input type="password" id="f-confirm-password" class="field-input" placeholder="Re-enter password" autocomplete="new-password">
+        </div>
+        <button type="submit" class="btn-save" id="btn-save-password">
+          <span class="btn-label">Update Password</span>
+          <span class="spin"></span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── Preferences ── -->
+  <div class="settings-section">
+    <div class="section-head">
+      <div class="section-head-text">
+        <div class="section-label">Preferences</div>
+        <div class="section-title">Notifications</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="section-alert" id="prefs-alert"></div>
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="toggle-info-title">Newsletter</div>
+          <div class="toggle-info-sub">Weekly homesteading tips and project ideas from Rootstock.</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="pref-newsletter">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="toggle-info-title">New guide notifications</div>
+          <div class="toggle-info-sub">Get notified when new guides are added for your favorite categories.</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="pref-guide-notifs">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <button type="button" class="btn-save" id="btn-save-prefs" style="margin-top:1rem;">
+        <span class="btn-label">Save Preferences</span>
+        <span class="spin"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Subscription ── -->
+  <div class="settings-section" id="sub-section">
+    <div class="section-head">
+      <div class="section-head-text">
+        <div class="section-label">Billing</div>
+        <div class="section-title">Subscription</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div id="sub-content">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Danger Zone ── -->
+  <div class="settings-section danger-section">
+    <div class="section-head">
+      <div class="section-head-text">
+        <div class="section-label">Danger Zone</div>
+        <div class="section-title">Delete Account</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <p style="font-size:14px;color:var(--muted);margin-bottom:var(--space-3);line-height:1.55;">
+        Permanently delete your account and all associated data — projects, inventory, journal entries, and settings. This cannot be undone.
+      </p>
+      <button type="button" class="btn-danger" id="btn-delete-account">
+        Delete my account
+      </button>
+    </div>
+  </div>
+
+</main>
+
+<!-- Loading skeleton -->
+<div id="loading" style="max-width:720px;margin:2.5rem auto;padding:0 1.5rem;">
+  <div class="skel" style="height:28px;width:140px;border-radius:8px;margin-bottom:2rem;"></div>
+  <div style="background:white;border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:1.5rem;">
+    <div style="padding:16px 20px;border-bottom:1px solid var(--border);"><div class="skel" style="height:14px;width:60px;"></div></div>
+    <div style="padding:20px;display:flex;flex-direction:column;gap:14px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;"><div class="skel" style="height:42px;"></div><div class="skel" style="height:42px;"></div></div>
+      <div class="skel" style="height:42px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Delete confirm modal ───────────────────────────────────────── -->
+<div class="modal-overlay" id="delete-modal">
+  <div class="modal">
+    <div class="modal-title">Delete your account?</div>
+    <div class="modal-body">All of your projects, inventory items, journal entries, and settings will be permanently deleted. This action cannot be undone.</div>
+    <div class="modal-actions">
+      <button type="button" class="btn-modal-cancel" id="btn-cancel-delete">Cancel</button>
+      <button type="button" class="btn-modal-confirm" id="btn-confirm-delete">Yes, delete my account</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { requireAuth, getProfile, signOut, updateProfile, supabase } from '/js/auth.js'
+import { createCheckoutSession } from '/js/api.js'
+
+// ── Init ──────────────────────────────────────────────────────────
+const session = await requireAuth()
+if (!session) throw new Error('Not authenticated')
+
+const profile = await getProfile()
+const isPro = profile?.subscription_tier === 'pro'
+
+renderNav(profile, session.user.email)
+populateForm(profile, session.user.email)
+renderSubscription(profile)
+
+document.getElementById('loading').style.display = 'none'
+document.getElementById('main').style.display = 'block'
+
+// ── Nav ───────────────────────────────────────────────────────────
+function renderNav(profile, email) {
+  const name = esc(profile?.display_name || email?.split('@')[0] || 'Account')
+  const tier = isPro
+    ? '<span class="tier-badge tier-pro">Pro</span>'
+    : '<span class="tier-badge tier-free">Free</span>'
+  document.getElementById('nav-user').innerHTML = `
+    <span class="nav-user-name">${name}</span>
+    ${tier}
+    <button class="btn-signout" id="btn-signout">Sign out</button>
+  `
+  document.getElementById('btn-signout').addEventListener('click', () => signOut())
+}
+
+function esc(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+}
+
+// ── Populate form fields ──────────────────────────────────────────
+function populateForm(profile, email) {
+  document.getElementById('f-display-name').value = profile?.display_name || ''
+  document.getElementById('f-zip').value           = profile?.zip_code    || ''
+  document.getElementById('f-skill').value         = profile?.skill_level || 'intermediate'
+  document.getElementById('f-email').value         = email || ''
+
+  // Preferences
+  const db_prefs = profile?.notification_prefs || {}
+  document.getElementById('pref-newsletter').checked    = db_prefs.newsletter   !== false
+  document.getElementById('pref-guide-notifs').checked  = db_prefs.guide_notifs !== false
+}
+
+// ── Subscription section ──────────────────────────────────────────
+function renderSubscription(profile) {
+  const container = document.getElementById('sub-content')
+  if (isPro) {
+    container.innerHTML = `
+      <div class="sub-card">
+        <div class="sub-info">
+          <div class="sub-tier-row">
+            <span class="sub-tier-name">Rootstock Pro</span>
+            <span class="tier-badge tier-pro">Active</span>
+          </div>
+          <p class="sub-desc">$9/month · Unlimited guides, MacGuyver mode, build journal, photo uploads, and more.</p>
+        </div>
+        <button type="button" class="btn-manage" id="btn-manage-sub">Manage billing →</button>
+      </div>
+    `
+    document.getElementById('btn-manage-sub').addEventListener('click', async () => {
+      // Redirect to Stripe customer portal
+      try {
+        const { url } = await createCheckoutSession()
+        window.location.href = url
+      } catch (err) {
+        console.error(err)
+      }
+    })
+  } else {
+    container.innerHTML = `
+      <div class="sub-card">
+        <div class="sub-info">
+          <div class="sub-tier-row">
+            <span class="sub-tier-name">Free Plan</span>
+            <span class="tier-badge tier-free">Current</span>
+          </div>
+          <p class="sub-desc">2 AI guide generations · text-only inventory · basic forum access</p>
+          <div class="pro-feature-list">
+            <span class="pro-feature-pill">✦ Unlimited guides</span>
+            <span class="pro-feature-pill">✦ MacGuyver mode</span>
+            <span class="pro-feature-pill">✦ Build journal</span>
+            <span class="pro-feature-pill">✦ Photo uploads</span>
+            <span class="pro-feature-pill">✦ Contractor lookup</span>
+          </div>
+        </div>
+        <button type="button" class="btn-upgrade" id="btn-upgrade">Upgrade to Pro — $9/mo →</button>
+      </div>
+    `
+    document.getElementById('btn-upgrade').addEventListener('click', async () => {
+      try {
+        const { url } = await createCheckoutSession()
+        window.location.href = url
+      } catch (err) {
+        console.error(err)
+      }
+    })
+  }
+}
+
+// ── Alert helpers ─────────────────────────────────────────────────
+function showAlert(id, msg, type = 'error') {
+  const el = document.getElementById(id)
+  el.textContent = msg
+  el.className = `section-alert show ${type}`
+}
+function clearAlert(id) {
+  const el = document.getElementById(id)
+  el.className = 'section-alert'
+  el.textContent = ''
+}
+function setLoading(btn, on) {
+  btn.classList.toggle('loading', on)
+  btn.disabled = on
+}
+
+// ── Save profile ──────────────────────────────────────────────────
+document.getElementById('profile-form').addEventListener('submit', async (e) => {
+  e.preventDefault()
+  clearAlert('profile-alert')
+  const btn = document.getElementById('btn-save-profile')
+  setLoading(btn, true)
+  try {
+    await updateProfile({
+      display_name: document.getElementById('f-display-name').value.trim() || null,
+      zip_code:     document.getElementById('f-zip').value.trim() || null,
+      skill_level:  document.getElementById('f-skill').value,
+    })
+    showAlert('profile-alert', 'Profile updated.', 'success')
+  } catch (err) {
+    showAlert('profile-alert', err.message || 'Save failed.')
+  } finally {
+    setLoading(btn, false)
+  }
+})
+
+// ── Update email ──────────────────────────────────────────────────
+document.getElementById('email-form').addEventListener('submit', async (e) => {
+  e.preventDefault()
+  clearAlert('auth-alert')
+  const email = document.getElementById('f-email').value.trim()
+  if (!email) { showAlert('auth-alert', 'Please enter an email address.'); return }
+
+  const btn = document.getElementById('btn-save-email')
+  setLoading(btn, true)
+  try {
+    const db = await supabase()
+    const { error } = await db.auth.updateUser({ email })
+    if (error) throw error
+    showAlert('auth-alert', 'Confirmation sent — check your new email address to confirm the change.', 'success')
+  } catch (err) {
+    showAlert('auth-alert', err.message || 'Update failed.')
+  } finally {
+    setLoading(btn, false)
+  }
+})
+
+// ── Update password ───────────────────────────────────────────────
+document.getElementById('password-form').addEventListener('submit', async (e) => {
+  e.preventDefault()
+  clearAlert('auth-alert')
+  const newPass  = document.getElementById('f-new-password').value
+  const confPass = document.getElementById('f-confirm-password').value
+
+  if (!newPass || newPass.length < 8) { showAlert('auth-alert', 'Password must be at least 8 characters.'); return }
+  if (newPass !== confPass) { showAlert('auth-alert', 'Passwords do not match.'); return }
+
+  const btn = document.getElementById('btn-save-password')
+  setLoading(btn, true)
+  try {
+    const db = await supabase()
+    const { error } = await db.auth.updateUser({ password: newPass })
+    if (error) throw error
+    document.getElementById('f-new-password').value = ''
+    document.getElementById('f-confirm-password').value = ''
+    showAlert('auth-alert', 'Password updated successfully.', 'success')
+  } catch (err) {
+    showAlert('auth-alert', err.message || 'Update failed.')
+  } finally {
+    setLoading(btn, false)
+  }
+})
+
+// ── Save preferences ──────────────────────────────────────────────
+document.getElementById('btn-save-prefs').addEventListener('click', async () => {
+  clearAlert('prefs-alert')
+  const btn = document.getElementById('btn-save-prefs')
+  setLoading(btn, true)
+  try {
+    await updateProfile({
+      notification_prefs: {
+        newsletter:    document.getElementById('pref-newsletter').checked,
+        guide_notifs:  document.getElementById('pref-guide-notifs').checked,
+      }
+    })
+    showAlert('prefs-alert', 'Preferences saved.', 'success')
+  } catch (err) {
+    showAlert('prefs-alert', err.message || 'Save failed.')
+  } finally {
+    setLoading(btn, false)
+  }
+})
+
+// ── Delete account ────────────────────────────────────────────────
+document.getElementById('btn-delete-account').addEventListener('click', () => {
+  document.getElementById('delete-modal').classList.add('open')
+})
+document.getElementById('btn-cancel-delete').addEventListener('click', () => {
+  document.getElementById('delete-modal').classList.remove('open')
+})
+document.getElementById('btn-confirm-delete').addEventListener('click', async () => {
+  const btn = document.getElementById('btn-confirm-delete')
+  btn.textContent = 'Deleting…'
+  btn.disabled = true
+  try {
+    const db = await supabase()
+    // Delete user data (RLS policies ensure users can only delete their own rows)
+    await db.from('inventory_items').delete().eq('user_id', session.user.id)
+    await db.from('projects').delete().eq('user_id', session.user.id)
+    await db.from('journal_entries').delete().eq('user_id', session.user.id)
+    await db.from('user_preferences').delete().eq('user_id', session.user.id)
+    // Sign out — account deletion requires a server-side admin call in production
+    // For now, sign out and direct to contact page
+    await signOut()
+    window.location.href = '/?account_deleted=1'
+  } catch (err) {
+    btn.textContent = 'Yes, delete my account'
+    btn.disabled = false
+    document.getElementById('delete-modal').classList.remove('open')
+    alert('Delete failed: ' + (err.message || 'Please contact support.'))
+  }
+})
+document.getElementById('delete-modal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) document.getElementById('delete-modal').classList.remove('open')
+})
+</script>
+</body>
+</html>

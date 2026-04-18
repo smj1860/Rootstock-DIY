@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rootstock — AI-Powered Homesteading Guides</title>
+  <meta name="description" content="Expert DIY guidance for homesteading and self-sufficiency. Step-by-step AI guides for solar, plumbing, gardening, canning, livestock, and more.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ── Rootstock design tokens ────────────────────────────────── */
+    :root {
+      --green-deep:  #1f3d0c;
+      --green-mid:   #3B6D11;
+      --green-light: #C0DD97;
+      --green-pale:  #EAF3DE;
+      --cream:       #F7F4EE;
+      --bark:        #5C4A2A;
+      --bark-light:  #A0845C;
+      --text:        #1a1a14;
+      --muted:       #6b6b58;
+      --border:      rgba(92,74,42,0.14);
+
+      /* Aliases used by the landing page fragment */
+      --color-background-primary:   var(--cream);
+      --color-background-secondary: #EEEAE2;
+      --color-text-primary:         var(--text);
+      --color-text-secondary:       var(--muted);
+      --color-text-tertiary:        rgba(107,107,88,0.6);
+      --color-border-secondary:     var(--border);
+      --color-border-tertiary:      rgba(92,74,42,0.10);
+      --border-radius-md:           8px;
+      --border-radius-lg:           12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); }
+
+    /* ── Page-level styles ──────────────────────────────────────── */
+    .hero { background: var(--color-background-primary); padding: 5rem 2rem 4rem; text-align: center; border-bottom: 0.5px solid var(--color-border-tertiary); }
+    .logo-mark { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 2.5rem; }
+    .logo-icon { width: 38px; height: 38px; background: #3B6D11; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .logo-text { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 500; color: var(--color-text-primary); letter-spacing: -0.5px; }
+    .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(28px, 5vw, 46px); font-weight: 500; color: var(--color-text-primary); line-height: 1.2; max-width: 720px; margin: 0 auto 1.25rem; }
+    .hero h1 span { color: #3B6D11; }
+    .hero p { font-size: 18px; color: var(--color-text-secondary); max-width: 600px; margin: 0 auto 2.5rem; line-height: 1.7; }
+    .cta-bar { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-width: 520px; margin: 0 auto; }
+    .cta-bar input { flex: 1 1 220px; padding: 12px 16px; font-size: 15px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-secondary); color: var(--color-text-primary); outline: none; font-family: 'DM Sans', sans-serif; }
+    .cta-bar input:focus { border-color: #3B6D11; box-shadow: 0 0 0 2px rgba(59,109,17,0.15); }
+    .cta-btn { padding: 12px 24px; background: #3B6D11; color: #EAF3DE; border: none; border-radius: var(--border-radius-md); font-size: 15px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; gap: 8px; }
+    .cta-btn:hover:not(:disabled) { background: #27500A; }
+    .cta-btn:disabled { opacity: 0.65; cursor: not-allowed; }
+    .cta-spinner { width: 15px; height: 15px; border: 2px solid rgba(192,221,151,0.35); border-top-color: #C0DD97; border-radius: 50%; animation: cta-spin 0.65s linear infinite; display: none; }
+    @keyframes cta-spin { to { transform: rotate(360deg); } }
+    .cta-btn.loading .cta-spinner { display: block; }
+    .cta-btn.loading .cta-label { display: none; }
+    .badge { display: inline-block; margin-top: 1.25rem; font-size: 12px; color: var(--color-text-tertiary); background: var(--color-background-secondary); padding: 4px 12px; border-radius: 20px; border: 0.5px solid var(--color-border-tertiary); }
+    .cta-success { display: none; margin-top: 1rem; font-size: 14px; color: #3B6D11; background: #EAF3DE; border: 1px solid #C0DD97; border-radius: 10px; padding: 10px 18px; max-width: 420px; margin-left: auto; margin-right: auto; }
+    .cta-success.show { display: block; }
+    .cta-error { display: none; margin-top: 0.75rem; font-size: 13px; color: #991b1b; }
+    .cta-error.show { display: block; }
+
+    .features { padding: 4rem 2rem; background: var(--color-background-secondary); }
+    .section-label { text-align: center; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; color: #3B6D11; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .section-title { font-family: 'Playfair Display', serif; text-align: center; font-size: 22px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 2.5rem; }
+    .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; max-width: 900px; margin: 0 auto; }
+    .feature-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.25rem; }
+    .feature-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.75rem; }
+    .feature-card h3 { font-size: 15px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 6px; }
+    .feature-card p { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; }
+
+    .categories { padding: 4rem 2rem; background: var(--color-background-primary); }
+    .cat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; max-width: 860px; margin: 0 auto; }
+    .cat-card { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.25rem 1rem; text-align: center; background: var(--color-background-secondary); transition: border-color 0.15s; cursor: default; }
+    .cat-card:hover { border-color: #3B6D11; }
+    .cat-icon { font-size: 26px; display: block; margin-bottom: 8px; }
+    .cat-label { font-size: 13px; font-weight: 500; color: var(--color-text-primary); display: block; line-height: 1.4; }
+
+    .partners { padding: 3rem 2rem; background: var(--color-background-secondary); border-top: 0.5px solid var(--color-border-tertiary); }
+    .partner-grid { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; max-width: 700px; margin: 0 auto; }
+    .partner-logo { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.5rem; text-align: center; min-width: 160px; flex: 1; }
+    .partner-name { font-size: 16px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+    .future-badge { font-size: 11px; background: #EAF3DE; color: #3B6D11; padding: 2px 8px; border-radius: 10px; display: inline-block; }
+
+    .footer { padding: 1.5rem 2rem; background: var(--color-background-primary); border-top: 0.5px solid var(--color-border-tertiary); text-align: center; }
+    .footer p { font-size: 12px; color: var(--color-text-tertiary); line-height: 1.6; max-width: 600px; margin: 0 auto; }
+  </style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="logo-mark">
+    <div class="logo-icon">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M11 3 C11 3 7 7 7 12 C7 15 9 17 11 18 C13 17 15 15 15 12 C15 7 11 3 11 3Z" fill="#C0DD97"/>
+        <path d="M11 18 L11 21" stroke="#C0DD97" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M11 15 C11 15 8 13 6 14" stroke="#C0DD97" stroke-width="1.2" stroke-linecap="round"/>
+        <path d="M11 17 C11 17 13.5 15 15.5 16" stroke="#C0DD97" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <span class="logo-text">Rootstock</span>
+  </div>
+  <h1>Master your homestead with <span>AI-powered</span> precision.</h1>
+  <p>Expert DIY instructions, tool lists, and pro-contractor referrals for every project — from building a shed to canning your harvest.</p>
+  <div class="cta-bar" id="cta-bar">
+    <input type="email" placeholder="your@email.com" id="waitlist-email" autocomplete="email" />
+    <button class="cta-btn" id="waitlist-btn">
+      <span class="cta-label">Join the homestead</span>
+      <span class="cta-spinner"></span>
+    </button>
+  </div>
+  <div class="cta-success" id="cta-success">
+    🌱 You're on the list! We'll be in touch with early access and discounts.
+  </div>
+  <div class="cta-error" id="cta-error"></div>
+  <span class="badge">Join the waitlist for early access &amp; exclusive discounts</span>
+</div>
+
+<div class="features">
+  <p class="section-label">How it works</p>
+  <h2 class="section-title">Stop guessing. Start growing.</h2>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#FCEBEB;">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2L10.5 6.5H15.5L11.5 9.5L13 14L9 11L5 14L6.5 9.5L2.5 6.5H7.5Z" fill="#A32D2D"/></svg>
+      </div>
+      <h3>Safety first</h3>
+      <p>Critical warnings and environment prep before you ever pick up a tool.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#E6F1FB;">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="3" y="3" width="5" height="5" rx="1" fill="#185FA5"/><rect x="10" y="3" width="5" height="5" rx="1" fill="#185FA5"/><rect x="3" y="10" width="5" height="5" rx="1" fill="#185FA5"/><rect x="10" y="10" width="5" height="5" rx="1" fill="#185FA5"/></svg>
+      </div>
+      <h3>Master tool list</h3>
+      <p>Precise hardware and tool recommendations with direct links to top-rated supplies.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#EAF3DE;">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 5H14M4 9H14M4 13H10" stroke="#3B6D11" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+      <h3>Step-by-step execution</h3>
+      <p>AI instructions tailored to your specific skill level, start to finish.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#FAEEDA;">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 13 C4 13 6 10 9 10 C12 10 14 13 14 13" stroke="#854F0B" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="6" r="3" fill="#854F0B"/></svg>
+      </div>
+      <h3>Pro hand-off</h3>
+      <p>One-click referrals to licensed local contractors for complex builds.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#EEEDFE;">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 15 L7 9 L11 12 L15 5" stroke="#534AB7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <h3>Pro feedback loop</h3>
+      <p>Ask follow-up questions in real time if you get stuck on any step.</p>
+    </div>
+  </div>
+</div>
+
+<div class="categories">
+  <p class="section-label">Featured categories</p>
+  <h2 class="section-title">Built for every corner of your land.</h2>
+  <div class="cat-grid">
+    <div class="cat-card"><span class="cat-icon">🌿</span><span class="cat-label">Landscape &amp; gardening</span></div>
+    <div class="cat-card"><span class="cat-icon">🍳</span><span class="cat-label">Cooking &amp; baking</span></div>
+    <div class="cat-card"><span class="cat-icon">🫙</span><span class="cat-label">Canning</span></div>
+    <div class="cat-card"><span class="cat-icon">🔧</span><span class="cat-label">Auto &amp; small engine repair</span></div>
+    <div class="cat-card"><span class="cat-icon">🚿</span><span class="cat-label">Plumbing</span></div>
+    <div class="cat-card"><span class="cat-icon">⚡</span><span class="cat-label">Electrical</span></div>
+    <div class="cat-card"><span class="cat-icon">☀️</span><span class="cat-label">Solar</span></div>
+    <div class="cat-card"><span class="cat-icon">🐄</span><span class="cat-label">Animals &amp; livestock</span></div>
+    <div class="cat-card"><span class="cat-icon">🪵</span><span class="cat-label">Building &amp; renovation</span></div>
+    <div class="cat-card"><span class="cat-icon">🌱</span><span class="cat-label">Other self-sufficiency</span></div>
+  </div>
+</div>
+
+<div class="partners">
+  <p class="section-label">Partners</p>
+  <h2 class="section-title" style="margin-bottom:1.5rem;">Trusted supply sources</h2>
+  <div class="partner-grid">
+    <div class="partner-logo"><div class="partner-name">The Home Depot</div><span class="future-badge">Future partner</span></div>
+    <div class="partner-logo"><div class="partner-name">Amazon</div><span class="future-badge">Future partner</span></div>
+    <div class="partner-logo"><div class="partner-name">Tractor Supply Co.</div><span class="future-badge">Future partner</span></div>
+  </div>
+</div>
+
+<div class="footer">
+  <p>© 2026 Rootstock. All rights reserved.<br>
+  <strong>Affiliate disclosure:</strong> As an affiliate, we may earn a commission from qualifying purchases made through links on this site. This does not affect our editorial recommendations.</p>
+</div>
+
+<script>
+  const emailInput  = document.getElementById('waitlist-email')
+  const submitBtn   = document.getElementById('waitlist-btn')
+  const successEl   = document.getElementById('cta-success')
+  const errorEl     = document.getElementById('cta-error')
+
+  async function handleSubscribe() {
+    const email = emailInput.value.trim()
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+    errorEl.className = 'cta-error'
+    errorEl.textContent = ''
+
+    if (!email || !emailRe.test(email)) {
+      errorEl.textContent = 'Please enter a valid email address.'
+      errorEl.className = 'cta-error show'
+      emailInput.focus()
+      return
+    }
+
+    submitBtn.classList.add('loading')
+    submitBtn.disabled = true
+    emailInput.disabled = true
+
+    try {
+      const res  = await fetch('/api/subscribe', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ email, source: 'landing-page' }),
+      })
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Something went wrong. Please try again.')
+      }
+
+      // Success — hide form, show confirmation
+      document.getElementById('cta-bar').style.display = 'none'
+      successEl.className = 'cta-success show'
+    } catch (err) {
+      errorEl.textContent = err.message || 'Something went wrong. Please try again.'
+      errorEl.className = 'cta-error show'
+      submitBtn.classList.remove('loading')
+      submitBtn.disabled = false
+      emailInput.disabled = false
+    }
+  }
+
+  submitBtn.addEventListener('click', handleSubscribe)
+  emailInput.addEventListener('keydown', e => { if (e.key === 'Enter') handleSubscribe() })
+</script>
+</body>
+</html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rootstock — About</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --green-deep: #1f3d0c;
+      --green-mid: #3B6D11;
+      --green-light: #C0DD97;
+      --green-pale: #EAF3DE;
+      --cream: #F7F4EE;
+      --bark: #5C4A2A;
+      --bark-light: #A0845C;
+      --text: #1a1a14;
+      --muted: #6b6b58;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── PAGE WRAPPER ── */
+    .page {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 4rem 2rem 5rem;
+    }
+
+    /* ── LOGO BLOCK ── */
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 3.5rem;
+    }
+
+    .logo-badge {
+      width: 72px;
+      height: 72px;
+      background: var(--green-deep);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 24px rgba(31,61,12,0.18);
+    }
+
+    .logo-wordmark {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .logo-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 38px;
+      font-weight: 600;
+      color: var(--green-deep);
+      letter-spacing: -1px;
+      line-height: 1;
+    }
+
+    .logo-tagline {
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--bark-light);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      width: 56px;
+      height: 2px;
+      background: var(--green-light);
+      border-radius: 2px;
+      margin: 2rem 0;
+    }
+
+    /* ── ABOUT SECTION ── */
+    .about-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      color: var(--green-mid);
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    .about-heading {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      font-weight: 500;
+      color: var(--green-deep);
+      line-height: 1.3;
+      margin-bottom: 1.25rem;
+      max-width: 560px;
+    }
+
+    .about-body {
+      font-size: 16px;
+      font-weight: 300;
+      color: var(--muted);
+      line-height: 1.85;
+      max-width: 580px;
+    }
+
+    .about-body strong {
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    /* ── ACCENT CARD ── */
+    .accent-card {
+      margin-top: 2.5rem;
+      background: var(--green-deep);
+      border-radius: 16px;
+      padding: 2rem 2.25rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .accent-icon {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      background: rgba(192,221,151,0.15);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
+    }
+
+    .accent-card p {
+      font-size: 15px;
+      font-weight: 300;
+      color: var(--green-light);
+      line-height: 1.75;
+    }
+
+    .accent-card p strong {
+      font-weight: 500;
+      color: #fff;
+    }
+
+    /* ── FOOTER NOTE ── */
+    .footer-note {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(92,74,42,0.12);
+      font-size: 11px;
+      color: var(--bark-light);
+      line-height: 1.7;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- LOGO -->
+    <div class="logo-wrap">
+      <div class="logo-badge">
+        <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- leaf -->
+          <path d="M22 6 C22 6 13 14 13 24 C13 30 17 34 22 36 C27 34 31 30 31 24 C31 14 22 6 22 6Z" fill="#C0DD97"/>
+          <!-- stem -->
+          <path d="M22 36 L22 42" stroke="#C0DD97" stroke-width="2.5" stroke-linecap="round"/>
+          <!-- left branch -->
+          <path d="M22 30 C22 30 16 27 12 29" stroke="#C0DD97" stroke-width="2" stroke-linecap="round"/>
+          <!-- right branch -->
+          <path d="M22 33 C22 33 27 30 31 32" stroke="#C0DD97" stroke-width="2" stroke-linecap="round"/>
+          <!-- center vein -->
+          <path d="M22 10 L22 34" stroke="#3B6D11" stroke-width="1" stroke-linecap="round" opacity="0.5"/>
+        </svg>
+      </div>
+      <div class="logo-wordmark">
+        <span class="logo-name">Rootstock</span>
+        <span class="logo-tagline">AI-Powered Homesteading</span>
+      </div>
+    </div>
+
+    <!-- ABOUT -->
+    <p class="about-label">About Rootstock</p>
+    <h2 class="about-heading">Your AI guide to a more self-sufficient life.</h2>
+
+    <div class="divider"></div>
+
+    <p class="about-body">
+      Rootstock is an <strong>AI-powered homesteading assistant</strong> built for people who want real answers, not search results. Whether you're wiring a solar panel, canning your harvest, fixing a small engine, or raising your first flock, Rootstock gives you step-by-step guidance tailored to your skill level — complete with safety checklists, tool lists, and expert tips drawn from generations of hands-on knowledge.
+    </p>
+
+    <!-- ACCENT CARD -->
+    <div class="accent-card">
+      <div class="accent-icon">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M10 2 C10 2 5 7 5 12 C5 15.3 7.2 17.5 10 18.5 C12.8 17.5 15 15.3 15 12 C15 7 10 2 10 2Z" fill="#C0DD97"/>
+          <path d="M10 18.5 L10 21" stroke="#C0DD97" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <p><strong>From the soil up.</strong> Rootstock was built on a simple belief — that every person deserves the knowledge to grow, build, and maintain their own little corner of the world, without needing a contractor on speed dial or a degree in agriculture.</p>
+    </div>
+
+    <!-- FOOTER DISCLOSURE -->
+    <p class="footer-note">
+      © 2026 Rootstock. All rights reserved.<br>
+      <strong>Affiliate disclosure:</strong> As an affiliate, we may earn a commission from qualifying purchases made through links on this site. This does not affect our editorial recommendations.
+    </p>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In — Rootstock</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --green-deep:  #1f3d0c;
+      --green-mid:   #3B6D11;
+      --green-light: #C0DD97;
+      --green-pale:  #EAF3DE;
+      --cream:       #F7F4EE;
+      --bark-light:  #A0845C;
+      --text:        #1a1a14;
+      --muted:       #6b6b58;
+      --border:      rgba(92, 74, 42, 0.14);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.25rem;
+    }
+
+    /* ── Card ── */
+    .auth-card {
+      width: 100%;
+      max-width: 420px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2.5rem 2.25rem;
+      box-shadow: 0 4px 32px rgba(31,61,12,0.07);
+    }
+
+    /* ── Logo ── */
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 2rem;
+      text-decoration: none;
+    }
+    .logo-mark {
+      width: 36px;
+      height: 36px;
+      background: var(--green-deep);
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .logo-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--green-deep);
+      letter-spacing: -0.5px;
+    }
+
+    /* ── Heading ── */
+    .auth-heading {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      font-weight: 500;
+      color: var(--green-deep);
+      margin-bottom: 0.375rem;
+      line-height: 1.25;
+    }
+    .auth-subheading {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 1.75rem;
+    }
+
+    /* ── Form ── */
+    .form-group { margin-bottom: 1rem; }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    input[type="email"],
+    input[type="password"],
+    input[type="text"] {
+      width: 100%;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      color: var(--text);
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 11px 14px;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    input:focus {
+      border-color: var(--green-mid);
+      box-shadow: 0 0 0 3px rgba(59,109,17,0.1);
+      background: white;
+    }
+    input::placeholder { color: var(--muted); opacity: 0.55; }
+
+    /* ── Password row (label + forgot link) ── */
+    .password-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .forgot-link {
+      font-size: 12px;
+      color: var(--green-mid);
+      text-decoration: none;
+      font-weight: 400;
+    }
+    .forgot-link:hover { text-decoration: underline; }
+
+    /* ── Submit button ── */
+    .btn-submit {
+      width: 100%;
+      margin-top: 0.5rem;
+      padding: 12px;
+      background: var(--green-mid);
+      color: var(--green-pale);
+      border: none;
+      border-radius: 9px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-submit:hover:not(:disabled) { background: var(--green-deep); }
+    .btn-submit:active:not(:disabled) { transform: scale(0.99); }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* ── Loading spinner ── */
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(192,221,151,0.35);
+      border-top-color: var(--green-light);
+      border-radius: 50%;
+      animation: spin 0.65s linear infinite;
+      display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .btn-submit.loading .spinner { display: block; }
+    .btn-submit.loading .btn-label { display: none; }
+
+    /* ── Alert ── */
+    .alert {
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      margin-bottom: 1rem;
+      display: none;
+      line-height: 1.5;
+    }
+    .alert.show { display: block; }
+    .alert-error   { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+    .alert-success { background: var(--green-pale); color: var(--green-deep); border: 1px solid var(--green-light); }
+
+    /* ── Divider ── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 1.5rem 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── Footer link ── */
+    .auth-footer {
+      margin-top: 1.5rem;
+      text-align: center;
+      font-size: 13.5px;
+      color: var(--muted);
+    }
+    .auth-footer a {
+      color: var(--green-mid);
+      font-weight: 500;
+      text-decoration: none;
+    }
+    .auth-footer a:hover { text-decoration: underline; }
+
+    /* ── Back to site link ── */
+    .back-link {
+      margin-top: 1.5rem;
+      font-size: 12px;
+      color: var(--muted);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .back-link:hover { color: var(--green-mid); text-decoration: none; }
+
+    /* ── Reset password state ── */
+    .reset-view { display: none; }
+    .reset-view.active { display: block; }
+    .login-view.hidden { display: none; }
+  </style>
+</head>
+<body>
+
+  <div class="auth-card">
+
+    <!-- Logo -->
+    <a href="/" class="logo">
+      <div class="logo-mark">
+        <svg width="20" height="20" viewBox="0 0 22 22" fill="none">
+          <path d="M11 3C11 3 7 7 7 12C7 15 9 17 11 18C13 17 15 15 15 12C15 7 11 3 11 3Z" fill="#C0DD97"/>
+          <path d="M11 18L11 21" stroke="#C0DD97" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M11 15C11 15 8 13 6 14" stroke="#C0DD97" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="M11 17C11 17 13.5 15 15.5 16" stroke="#C0DD97" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="logo-name">Rootstock</span>
+    </a>
+
+    <!-- ── LOGIN VIEW ── -->
+    <div id="login-view" class="login-view">
+
+      <h1 class="auth-heading">Welcome back.</h1>
+      <p class="auth-subheading">Sign in to your homestead.</p>
+
+      <div id="alert" class="alert"></div>
+
+      <form id="login-form" novalidate>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+        </div>
+
+        <div class="form-group">
+          <div class="password-row">
+            <label for="password">Password</label>
+            <a href="#" class="forgot-link" id="forgot-link">Forgot password?</a>
+          </div>
+          <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password" required>
+        </div>
+
+        <button type="submit" class="btn-submit" id="submit-btn">
+          <span class="btn-label">Sign in</span>
+          <span class="spinner"></span>
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        Don't have an account? <a href="/app/signup.html">Create one free</a>
+      </div>
+
+    </div>
+
+    <!-- ── RESET PASSWORD VIEW ── -->
+    <div id="reset-view" class="reset-view">
+
+      <h1 class="auth-heading">Reset password.</h1>
+      <p class="auth-subheading">We'll email you a link to reset it.</p>
+
+      <div id="reset-alert" class="alert"></div>
+
+      <form id="reset-form" novalidate>
+        <div class="form-group">
+          <label for="reset-email">Email</label>
+          <input type="email" id="reset-email" name="email" placeholder="you@example.com" autocomplete="email" required>
+        </div>
+        <button type="submit" class="btn-submit" id="reset-btn">
+          <span class="btn-label">Send reset link</span>
+          <span class="spinner"></span>
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        <a href="#" id="back-to-login">← Back to sign in</a>
+      </div>
+
+    </div>
+
+  </div>
+
+  <a href="/" class="back-link">← Back to rootstockapp.com</a>
+
+<script type="module">
+import { signIn, redirectIfAuthed, sendPasswordReset } from '/js/auth.js'
+
+// If already logged in, skip the login page
+redirectIfAuthed()
+
+const loginView  = document.getElementById('login-view')
+const resetView  = document.getElementById('reset-view')
+const alert      = document.getElementById('alert')
+const resetAlert = document.getElementById('reset-alert')
+
+function showAlert(el, msg, type = 'error') {
+  el.textContent = msg
+  el.className = `alert show alert-${type}`
+}
+function clearAlert(el) {
+  el.className = 'alert'
+  el.textContent = ''
+}
+function setLoading(btn, on) {
+  btn.classList.toggle('loading', on)
+  btn.disabled = on
+}
+
+// ── Login form ────────────────────────────────────────────────────
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+  e.preventDefault()
+  clearAlert(alert)
+
+  const email    = document.getElementById('email').value.trim()
+  const password = document.getElementById('password').value
+  const btn      = document.getElementById('submit-btn')
+
+  if (!email || !password) {
+    showAlert(alert, 'Please enter your email and password.')
+    return
+  }
+
+  setLoading(btn, true)
+  try {
+    await signIn(email, password)
+    // On success — redirect to intended destination or dashboard
+    const params = new URLSearchParams(window.location.search)
+    window.location.href = params.get('next') || '/app/'
+  } catch (err) {
+    const msg = err.message?.includes('Invalid login')
+      ? 'Incorrect email or password. Please try again.'
+      : (err.message || 'Sign in failed. Please try again.')
+    showAlert(alert, msg)
+    setLoading(btn, false)
+  }
+})
+
+// ── Forgot password toggle ────────────────────────────────────────
+document.getElementById('forgot-link').addEventListener('click', (e) => {
+  e.preventDefault()
+  loginView.classList.add('hidden')
+  resetView.classList.add('active')
+  clearAlert(alert)
+})
+
+document.getElementById('back-to-login').addEventListener('click', (e) => {
+  e.preventDefault()
+  resetView.classList.remove('active')
+  loginView.classList.remove('hidden')
+  clearAlert(resetAlert)
+})
+
+// ── Reset form ────────────────────────────────────────────────────
+document.getElementById('reset-form').addEventListener('submit', async (e) => {
+  e.preventDefault()
+  clearAlert(resetAlert)
+
+  const email = document.getElementById('reset-email').value.trim()
+  const btn   = document.getElementById('reset-btn')
+
+  if (!email) {
+    showAlert(resetAlert, 'Please enter your email address.')
+    return
+  }
+
+  setLoading(btn, true)
+  try {
+    await sendPasswordReset(email)
+    showAlert(resetAlert, 'Check your email — we sent you a reset link.', 'success')
+    document.getElementById('reset-email').value = ''
+  } catch (err) {
+    showAlert(resetAlert, err.message || 'Failed to send reset email.')
+  } finally {
+    setLoading(btn, false)
+  }
+})
+</script>
+</body>
+</html>

@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tool Reviews — Rootstock</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/rootstock.css">
+  <style>
+    body { background: var(--cream); min-height: 100vh; }
+
+    /* ── Nav ──────────────────────────────────────────────────────── */
+    .app-nav { position: sticky; top: 0; z-index: 100; background: white; border-bottom: 1px solid var(--border); }
+    .app-nav-inner { max-width: 1100px; margin: 0 auto; padding: 0 var(--space-6); height: 56px; display: flex; align-items: center; gap: var(--space-6); }
+    .nav-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; flex-shrink: 0; }
+    .nav-logo-mark { width: 30px; height: 30px; background: var(--green-deep); border-radius: 7px; display: flex; align-items: center; justify-content: center; }
+    .nav-logo-name { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 600; color: var(--green-deep); letter-spacing: -0.3px; }
+    .nav-links { display: flex; align-items: center; gap: 2px; flex: 1; }
+    .nav-link { font-size: 14px; font-weight: 400; color: var(--muted); text-decoration: none; padding: 6px 10px; border-radius: 7px; transition: color 0.12s, background 0.12s; white-space: nowrap; }
+    .nav-link:hover { color: var(--green-deep); background: var(--green-pale); text-decoration: none; }
+    .nav-link.active { color: var(--green-deep); font-weight: 500; background: var(--green-pale); }
+    .nav-user { display: flex; align-items: center; gap: var(--space-3); margin-left: auto; flex-shrink: 0; }
+    .nav-user-name { font-size: 13.5px; font-weight: 500; color: var(--text); }
+    .tier-badge { font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 2px 8px; border-radius: 100px; }
+    .tier-free { background: var(--cream); color: var(--bark-light); border: 1px solid var(--border); }
+    .tier-pro  { background: var(--green-deep); color: var(--green-light); }
+    .btn-signout { font-size: 13px; color: var(--muted); background: none; border: none; cursor: pointer; padding: 5px 8px; border-radius: 6px; font-family: 'DM Sans', sans-serif; transition: color 0.12s, background 0.12s; }
+    .btn-signout:hover { color: var(--text); background: var(--cream); }
+
+    .skel { border-radius: 6px; background: linear-gradient(90deg, #ece9e1 25%, #f4f1e9 50%, #ece9e1 75%); background-size: 200% 100%; animation: shimmer 1.3s infinite; }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    /* ── Layout ──────────────────────────────────────────────────── */
+    .main { max-width: 1100px; margin: 0 auto; padding: 2.5rem var(--space-6) 5rem; }
+
+    /* ── Page header ──────────────────────────────────────────────── */
+    .page-header { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-4); margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .page-title-block { flex: 1; min-width: 200px; }
+    .page-title { font-family: 'Playfair Display', serif; font-size: clamp(22px, 3vw, 28px); font-weight: 500; color: var(--green-deep); margin-bottom: 3px; }
+    .page-sub { font-size: 14px; color: var(--muted); }
+    .btn-write {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--green-mid); color: var(--green-pale);
+      font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+      padding: 9px 18px; border: none; border-radius: 9px; cursor: pointer;
+      transition: background 0.12s; white-space: nowrap; flex-shrink: 0;
+    }
+    .btn-write:hover { background: var(--green-deep); }
+    .btn-write-free {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: white; color: var(--muted);
+      border: 1px solid var(--border); font-family: 'DM Sans', sans-serif;
+      font-size: 14px; font-weight: 400; padding: 9px 18px;
+      border-radius: 9px; cursor: pointer; white-space: nowrap; flex-shrink: 0;
+      transition: all 0.12s;
+    }
+    .btn-write-free:hover { border-color: var(--green-mid); color: var(--green-deep); }
+
+    /* ── Toolbar ──────────────────────────────────────────────────── */
+    .toolbar { display: flex; align-items: center; gap: var(--space-3); margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .search-wrap { position: relative; flex: 1; min-width: 180px; max-width: 300px; }
+    .search-wrap svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+    .search-input { width: 100%; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text); background: white; border: 1px solid var(--border); border-radius: 9px; padding: 8px 12px 8px 34px; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
+    .search-input:focus { border-color: var(--green-mid); box-shadow: 0 0 0 3px rgba(59,109,17,0.1); }
+    .search-input::placeholder { color: var(--muted); opacity: 0.6; }
+    .filter-select { font-family: 'DM Sans', sans-serif; font-size: 13.5px; color: var(--text); background: white; border: 1px solid var(--border); border-radius: 9px; padding: 8px 30px 8px 12px; outline: none; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236b6b58' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; transition: border-color 0.15s; }
+    .filter-select:focus { border-color: var(--green-mid); outline: none; }
+    .result-count { font-size: 13px; color: var(--muted); margin-left: auto; white-space: nowrap; }
+
+    /* ── Review grid ──────────────────────────────────────────────── */
+    .review-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--space-5); }
+
+    .review-card { background: white; border: 1px solid var(--border); border-radius: var(--radius-xl); padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-3); transition: box-shadow 0.15s, border-color 0.15s; }
+    .review-card:hover { box-shadow: 0 4px 20px rgba(31,61,12,0.07); border-color: rgba(92,74,42,0.22); }
+
+    .review-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); }
+    .review-tool-info { flex: 1; }
+    .review-tool-name { font-size: 16px; font-weight: 500; color: var(--text); margin-bottom: 2px; line-height: 1.3; }
+    .review-brand { font-size: 13px; color: var(--muted); }
+    .review-own-actions { display: flex; gap: 4px; flex-shrink: 0; }
+    .btn-icon { width: 28px; height: 28px; border: none; background: none; cursor: pointer; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--muted); transition: background 0.12s, color 0.12s; }
+    .btn-icon:hover { background: var(--cream); color: var(--text); }
+    .btn-icon.delete:hover { background: #fef2f2; color: #991b1b; }
+
+    /* Stars */
+    .stars { display: flex; align-items: center; gap: 3px; }
+    .star { font-size: 16px; line-height: 1; }
+    .star.filled { color: #d97706; }
+    .star.empty  { color: #d1cfc8; }
+    .rating-num { font-size: 13px; font-weight: 500; color: var(--text); margin-left: 5px; }
+
+    /* Badges */
+    .review-badges { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+    .badge-cat { font-size: 12px; color: var(--bark-light); background: var(--cream); border: 1px solid var(--border); border-radius: 100px; padding: 2px 9px; }
+    .badge-verified { font-size: 12px; color: #166534; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 100px; padding: 2px 9px; display: flex; align-items: center; gap: 4px; }
+
+    /* Pros / cons */
+    .pros-cons { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+    .pc-block { }
+    .pc-label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 5px; }
+    .pc-label.pros { color: #166534; }
+    .pc-label.cons { color: #991b1b; }
+    .pc-text { font-size: 13px; color: var(--muted); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+    /* Body */
+    .review-body-text { font-size: 13.5px; color: var(--text); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+    .review-body-full { font-size: 13.5px; color: var(--text); line-height: 1.6; }
+    .btn-read-more { font-size: 12.5px; color: var(--green-mid); background: none; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; padding: 0; margin-top: 3px; }
+    .btn-read-more:hover { text-decoration: underline; }
+
+    /* Footer */
+    .review-footer { display: flex; align-items: center; justify-content: space-between; padding-top: var(--space-3); border-top: 1px solid var(--border); font-size: 12px; color: var(--muted); flex-wrap: wrap; gap: var(--space-2); }
+    .review-author { font-weight: 500; color: var(--text); }
+
+    /* ── Aggregate summary bar ────────────────────────────────────── */
+    .summary-bar { background: white; border: 1px solid var(--border); border-radius: var(--radius-xl); padding: var(--space-4) var(--space-5); margin-bottom: 1.5rem; display: flex; align-items: center; gap: var(--space-6); flex-wrap: wrap; }
+    .summary-avg { text-align: center; flex-shrink: 0; }
+    .summary-score { font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 600; color: var(--green-deep); line-height: 1; }
+    .summary-label { font-size: 12px; color: var(--muted); margin-top: 3px; }
+    .summary-breakdown { flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 200px; }
+    .breakdown-row { display: flex; align-items: center; gap: var(--space-3); }
+    .breakdown-label { font-size: 12px; color: var(--muted); width: 32px; text-align: right; flex-shrink: 0; }
+    .breakdown-bar-wrap { flex: 1; height: 6px; background: var(--cream); border-radius: 100px; overflow: hidden; }
+    .breakdown-bar { height: 100%; background: #d97706; border-radius: 100px; transition: width 0.4s ease; }
+    .breakdown-count { font-size: 12px; color: var(--muted); width: 20px; flex-shrink: 0; }
+
+    /* ── Empty state ──────────────────────────────────────────────── */
+    .empty-state { grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; background: white; border: 1.5px dashed var(--border); border-radius: var(--radius-xl); }
+    .empty-icon { font-size: 40px; margin-bottom: var(--space-3); }
+    .empty-heading { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 500; color: var(--green-deep); margin-bottom: 6px; }
+    .empty-sub { font-size: 14px; color: var(--muted); margin-bottom: var(--space-4); max-width: 340px; margin-left: auto; margin-right: auto; }
+
+    /* ── Pro upsell (write reviews) ───────────────────────────────── */
+    .pro-write-banner { display: flex; align-items: center; gap: var(--space-4); padding: 1rem 1.25rem; background: var(--green-deep); border-radius: var(--radius-xl); margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .pro-write-text { flex: 1; min-width: 180px; }
+    .pro-write-eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.13em; text-transform: uppercase; color: var(--green-light); margin-bottom: 3px; }
+    .pro-write-heading { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 500; color: white; margin-bottom: 2px; }
+    .pro-write-sub { font-size: 13px; color: rgba(192,221,151,0.75); }
+    .btn-upgrade-sm { display: inline-flex; align-items: center; gap: 5px; background: var(--green-mid); color: var(--green-pale); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; text-decoration: none; white-space: nowrap; transition: background 0.12s; }
+    .btn-upgrade-sm:hover { background: #2e5610; text-decoration: none; }
+
+    /* ── Drawer ───────────────────────────────────────────────────── */
+    .overlay { position: fixed; inset: 0; background: rgba(26,26,20,0.45); z-index: 200; display: none; align-items: flex-end; backdrop-filter: blur(2px); }
+    .overlay.open { display: flex; }
+    @media (min-width: 640px) { .overlay { align-items: center; justify-content: center; } }
+    .drawer { background: white; width: 100%; max-width: 540px; border-radius: 20px 20px 0 0; padding: 1.75rem 1.5rem 2rem; box-shadow: 0 -8px 40px rgba(31,61,12,0.12); transform: translateY(100%); transition: transform 0.28s cubic-bezier(0.32,0.72,0,1); max-height: 92vh; overflow-y: auto; }
+    @media (min-width: 640px) { .drawer { border-radius: 20px; transform: scale(0.96); opacity: 0; transition: transform 0.22s ease, opacity 0.22s ease; } }
+    .overlay.open .drawer { transform: translateY(0); }
+    @media (min-width: 640px) { .overlay.open .drawer { transform: scale(1); opacity: 1; } }
+
+    .drawer-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+    .drawer-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 500; color: var(--green-deep); }
+    .btn-close { width: 32px; height: 32px; border: none; background: var(--cream); cursor: pointer; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--muted); }
+    .btn-close:hover { background: #ece9e1; color: var(--text); }
+
+    .form-row { margin-bottom: 1rem; }
+    .form-row label { display: block; font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 5px; }
+    .form-row label .opt { font-weight: 400; color: var(--muted); }
+    .field-input { width: 100%; font-family: 'DM Sans', sans-serif; font-size: 14.5px; color: var(--text); background: var(--cream); border: 1px solid var(--border); border-radius: 9px; padding: 10px 13px; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
+    .field-input:focus { border-color: var(--green-mid); box-shadow: 0 0 0 3px rgba(59,109,17,0.1); background: white; }
+    .field-input::placeholder { color: var(--muted); opacity: 0.55; }
+    select.field-input { appearance: none; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236b6b58' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 13px center; padding-right: 34px; }
+    textarea.field-input { resize: vertical; min-height: 90px; font-size: 14px; line-height: 1.6; }
+    .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-bottom: 1rem; }
+
+    /* Star rating picker */
+    .star-picker { display: flex; align-items: center; gap: 6px; }
+    .star-btn { font-size: 26px; background: none; border: none; cursor: pointer; padding: 0 2px; line-height: 1; transition: transform 0.1s; color: #d1cfc8; }
+    .star-btn:hover, .star-btn.active { color: #d97706; transform: scale(1.1); }
+    .star-value-label { font-size: 13px; color: var(--muted); margin-left: 5px; }
+
+    /* Verified toggle */
+    .toggle-row-sm { display: flex; align-items: center; gap: var(--space-3); }
+    .toggle-row-sm-text { font-size: 13.5px; color: var(--text); flex: 1; }
+    .toggle-row-sm-sub { font-size: 12px; color: var(--muted); }
+    .toggle-switch { position: relative; width: 42px; height: 24px; flex-shrink: 0; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider { position: absolute; inset: 0; background: #d1cfc8; border-radius: 100px; cursor: pointer; transition: background 0.2s; }
+    .toggle-slider::before { content: ''; position: absolute; width: 18px; height: 18px; left: 3px; top: 3px; background: white; border-radius: 50%; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+    .toggle-switch input:checked + .toggle-slider { background: var(--green-mid); }
+    .toggle-switch input:checked + .toggle-slider::before { transform: translateX(18px); }
+
+    .drawer-alert { padding: 9px 13px; border-radius: 8px; font-size: 13px; margin-bottom: 1rem; display: none; line-height: 1.5; }
+    .drawer-alert.show { display: block; }
+    .drawer-alert.error   { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+
+    .drawer-footer { display: flex; gap: var(--space-3); margin-top: 1.25rem; }
+    .btn-primary { flex: 1; padding: 11px; background: var(--green-mid); color: var(--green-pale); border: none; border-radius: 9px; font-family: 'DM Sans', sans-serif; font-size: 14.5px; font-weight: 500; cursor: pointer; transition: background 0.12s; display: flex; align-items: center; justify-content: center; gap: 7px; }
+    .btn-primary:hover:not(:disabled) { background: var(--green-deep); }
+    .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
+    .btn-secondary { padding: 11px 18px; background: white; color: var(--text); border: 1px solid var(--border); border-radius: 9px; font-family: 'DM Sans', sans-serif; font-size: 14.5px; font-weight: 400; cursor: pointer; }
+    .btn-secondary:hover { background: var(--cream); }
+    .spin { width: 15px; height: 15px; border: 2px solid rgba(192,221,151,0.4); border-top-color: var(--green-light); border-radius: 50%; animation: rotate 0.6s linear infinite; display: none; }
+    @keyframes rotate { to { transform: rotate(360deg); } }
+    .btn-primary.loading .spin { display: block; }
+    .btn-primary.loading .btn-label { display: none; }
+
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .page-header { flex-direction: column; align-items: flex-start; }
+      .review-grid { grid-template-columns: 1fr; }
+      .pros-cons { grid-template-columns: 1fr; }
+      .form-row-2 { grid-template-columns: 1fr; }
+      .summary-bar { flex-direction: column; align-items: flex-start; gap: var(--space-4); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Navigation ──────────────────────────────────────────────────── -->
+<nav class="app-nav">
+  <div class="app-nav-inner">
+    <a href="/app/" class="nav-logo">
+      <div class="nav-logo-mark">
+        <svg width="18" height="18" viewBox="0 0 22 22" fill="none">
+          <path d="M11 3C11 3 7 7 7 12C7 15 9 17 11 18C13 17 15 15 15 12C15 7 11 3 11 3Z" fill="#C0DD97"/>
+          <path d="M11 18L11 21" stroke="#C0DD97" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M11 15C8 13 6 14 6 14" stroke="#C0DD97" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="M11 17C13.5 15 15.5 16 15.5 16" stroke="#C0DD97" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="nav-logo-name">Rootstock</span>
+    </a>
+
+    <div class="nav-links">
+      <a href="/app/"                  class="nav-link">Dashboard</a>
+      <a href="/app/project.html"      class="nav-link">New Project</a>
+      <a href="/app/inventory.html"    class="nav-link">Inventory</a>
+      <a href="/app/journal.html"      class="nav-link">Journal</a>
+      <a href="/app/forum.html"        class="nav-link">Forum</a>
+      <a href="/app/tool-reviews.html" class="nav-link active">Reviews</a>
+      <a href="/app/settings.html"     class="nav-link">Settings</a>
+    </div>
+
+    <div class="nav-user" id="nav-user">
+      <div class="skel" style="width:80px;height:16px;"></div>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Main ─────────────────────────────────────────────────────────── -->
+<main class="main" id="main" style="display:none;">
+
+  <!-- Page header -->
+  <div class="page-header">
+    <div class="page-title-block">
+      <h1 class="page-title">Tool Reviews</h1>
+      <p class="page-sub">Real-world reviews from homesteaders who've actually used the gear.</p>
+    </div>
+    <div id="header-btn-container"></div>
+  </div>
+
+  <!-- Pro write-review upsell (free users) -->
+  <div id="pro-write-banner" style="display:none;" class="pro-write-banner">
+    <div class="pro-write-text">
+      <div class="pro-write-eyebrow">Pro Feature</div>
+      <div class="pro-write-heading">Share your experience with the community.</div>
+      <div class="pro-write-sub">Upgrade to Pro to write tool reviews and help other homesteaders choose the right gear.</div>
+    </div>
+    <button class="btn-upgrade-sm" id="btn-upgrade-banner">Upgrade to Pro →</button>
+  </div>
+
+  <!-- Rating summary bar -->
+  <div class="summary-bar" id="summary-bar" style="display:none;"></div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+        <circle cx="6.5" cy="6.5" r="5" stroke="#6b6b58" stroke-width="1.5"/>
+        <path d="M10.5 10.5L13.5 13.5" stroke="#6b6b58" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <input type="search" class="search-input" id="search-input" placeholder="Search tools…">
+    </div>
+    <select class="filter-select" id="filter-cat">
+      <option value="">All categories</option>
+      <option value="landscape">Landscape & Gardening</option>
+      <option value="cooking">Cooking & Baking</option>
+      <option value="canning">Canning & Preservation</option>
+      <option value="auto">Auto & Small Engine</option>
+      <option value="plumbing">Plumbing</option>
+      <option value="electrical">Electrical</option>
+      <option value="solar">Solar & Off-Grid</option>
+      <option value="animals">Animals & Livestock</option>
+      <option value="building">Building & Renovation</option>
+      <option value="self-sufficiency">Other Self-Sufficiency</option>
+    </select>
+    <select class="filter-select" id="filter-rating">
+      <option value="">Any rating</option>
+      <option value="5">★★★★★ 5 stars</option>
+      <option value="4">★★★★ 4+ stars</option>
+      <option value="3">★★★ 3+ stars</option>
+    </select>
+    <select class="filter-select" id="filter-sort">
+      <option value="newest">Newest first</option>
+      <option value="highest">Highest rated</option>
+      <option value="lowest">Lowest rated</option>
+    </select>
+    <span class="result-count" id="result-count"></span>
+  </div>
+
+  <!-- Review grid -->
+  <div class="review-grid" id="review-grid"></div>
+
+</main>
+
+<!-- Loading skeleton -->
+<div id="loading" style="max-width:1100px;margin:2.5rem auto;padding:0 1.5rem;">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;">
+    <div style="display:flex;flex-direction:column;gap:8px;"><div class="skel" style="height:28px;width:200px;"></div><div class="skel" style="height:14px;width:320px;"></div></div>
+    <div class="skel" style="height:38px;width:140px;border-radius:9px;"></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;">
+    <div style="background:white;border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px;"><div class="skel" style="height:16px;width:65%;"></div><div class="skel" style="height:20px;width:90px;"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;"><div class="skel" style="height:60px;"></div><div class="skel" style="height:60px;"></div></div></div>
+    <div style="background:white;border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px;"><div class="skel" style="height:16px;width:50%;"></div><div class="skel" style="height:20px;width:80px;"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;"><div class="skel" style="height:60px;"></div><div class="skel" style="height:60px;"></div></div></div>
+    <div style="background:white;border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px;"><div class="skel" style="height:16px;width:70%;"></div><div class="skel" style="height:20px;width:100px;"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;"><div class="skel" style="height:60px;"></div><div class="skel" style="height:60px;"></div></div></div>
+  </div>
+</div>
+
+<!-- ── Write / Edit Review Drawer ─────────────────────────────────── -->
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="Write a review">
+  <div class="drawer" id="drawer">
+    <div class="drawer-header">
+      <h2 class="drawer-title" id="drawer-title">Write a Review</h2>
+      <button class="btn-close" id="btn-close" aria-label="Close">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+
+    <div class="drawer-alert" id="drawer-alert"></div>
+
+    <form id="review-form" novalidate>
+      <input type="hidden" id="edit-id">
+
+      <div class="form-row-2">
+        <div class="form-row" style="margin-bottom:0;">
+          <label for="f-tool-name">Tool name</label>
+          <input type="text" id="f-tool-name" class="field-input" placeholder="e.g. Angle grinder" required>
+        </div>
+        <div class="form-row" style="margin-bottom:0;">
+          <label for="f-brand">Brand <span class="opt">(optional)</span></label>
+          <input type="text" id="f-brand" class="field-input" placeholder="e.g. DeWalt, Lodge">
+        </div>
+      </div>
+
+      <div class="form-row" style="margin-top:1rem;">
+        <label for="f-cat">Category</label>
+        <select id="f-cat" class="field-input">
+          <option value="">— Select category —</option>
+          <option value="landscape">Landscape & Gardening</option>
+          <option value="cooking">Cooking & Baking</option>
+          <option value="canning">Canning & Preservation</option>
+          <option value="auto">Auto & Small Engine</option>
+          <option value="plumbing">Plumbing</option>
+          <option value="electrical">Electrical</option>
+          <option value="solar">Solar & Off-Grid</option>
+          <option value="animals">Animals & Livestock</option>
+          <option value="building">Building & Renovation</option>
+          <option value="self-sufficiency">Other Self-Sufficiency</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label>Rating</label>
+        <div class="star-picker" id="star-picker" role="group" aria-label="Rating">
+          <button type="button" class="star-btn" data-val="1">★</button>
+          <button type="button" class="star-btn" data-val="2">★</button>
+          <button type="button" class="star-btn" data-val="3">★</button>
+          <button type="button" class="star-btn" data-val="4">★</button>
+          <button type="button" class="star-btn" data-val="5">★</button>
+          <span class="star-value-label" id="star-label">Select a rating</span>
+        </div>
+        <input type="hidden" id="f-rating" value="">
+      </div>
+
+      <div class="form-row">
+        <label for="f-pros">Pros <span class="opt">(optional)</span></label>
+        <textarea id="f-pros" class="field-input" style="min-height:70px;" placeholder="What does it do well?"></textarea>
+      </div>
+
+      <div class="form-row">
+        <label for="f-cons">Cons <span class="opt">(optional)</span></label>
+        <textarea id="f-cons" class="field-input" style="min-height:70px;" placeholder="What are the downsides?"></textarea>
+      </div>
+
+      <div class="form-row">
+        <label for="f-body">Full review <span class="opt">(optional)</span></label>
+        <textarea id="f-body" class="field-input" placeholder="More detail about your experience — how you used it, how long you've had it, who it's best suited for…"></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="toggle-row-sm">
+          <div>
+            <div class="toggle-row-sm-text">Verified purchase</div>
+            <div class="toggle-row-sm-sub">I actually own and have used this tool.</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="f-verified" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="drawer-footer">
+        <button type="button" class="btn-secondary" id="btn-cancel">Cancel</button>
+        <button type="submit" class="btn-primary" id="btn-save">
+          <span class="btn-label">Submit Review</span>
+          <span class="spin"></span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script type="module">
+import { requireAuth, getProfile, signOut, supabase } from '/js/auth.js'
+import { createCheckoutSession } from '/js/api.js'
+
+// ── Init ──────────────────────────────────────────────────────────
+const session = await requireAuth()
+if (!session) throw new Error('Not authenticated')
+const userId = session.user.id
+
+const profile = await getProfile()
+const isPro   = profile?.subscription_tier === 'pro'
+
+renderNav(profile, session.user.email)
+renderHeaderBtn()
+await loadReviews()
+renderSummaryBar()
+renderGrid()
+
+document.getElementById('loading').style.display = 'none'
+document.getElementById('main').style.display = 'block'
+
+if (!isPro) {
+  document.getElementById('pro-write-banner').style.display = 'flex'
+}
+
+// ── Constants ─────────────────────────────────────────────────────
+const CAT_LABELS = {
+  landscape: 'Landscape & Gardening', cooking: 'Cooking & Baking',
+  canning: 'Canning & Preservation', auto: 'Auto & Small Engine',
+  plumbing: 'Plumbing', electrical: 'Electrical', solar: 'Solar & Off-Grid',
+  animals: 'Animals & Livestock', building: 'Building & Renovation',
+  'self-sufficiency': 'Other Self-Sufficiency',
+}
+const STAR_LABELS = { 1: 'Poor', 2: 'Fair', 3: 'Good', 4: 'Great', 5: 'Outstanding' }
+
+function esc(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+}
+
+function starsHtml(rating, size = 16) {
+  return [1,2,3,4,5].map(n =>
+    `<span class="star ${n <= rating ? 'filled' : 'empty'}" style="font-size:${size}px;">★</span>`
+  ).join('')
+}
+
+// ── State ─────────────────────────────────────────────────────────
+let allReviews = []
+let editingId  = null
+let ratingVal  = 0
+
+// ── Nav ───────────────────────────────────────────────────────────
+function renderNav(profile, email) {
+  const name = esc(profile?.display_name || email?.split('@')[0] || 'Account')
+  const tier = isPro ? '<span class="tier-badge tier-pro">Pro</span>' : '<span class="tier-badge tier-free">Free</span>'
+  document.getElementById('nav-user').innerHTML = `
+    <span class="nav-user-name">${name}</span>
+    ${tier}
+    <button class="btn-signout" id="btn-signout">Sign out</button>
+  `
+  document.getElementById('btn-signout').addEventListener('click', () => signOut())
+}
+
+function renderHeaderBtn() {
+  const container = document.getElementById('header-btn-container')
+  if (isPro) {
+    container.innerHTML = `<button class="btn-write" id="btn-write">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9.5 2.5l2 2-7 7H2.5v-2l7-7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+      Write a Review
+    </button>`
+    document.getElementById('btn-write').addEventListener('click', openAdd)
+  } else {
+    container.innerHTML = `<button class="btn-write-free" id="btn-write-free">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2" y="5" width="10" height="8" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 5V4a2 2 0 014 0v1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Pro: Write a Review
+    </button>`
+    document.getElementById('btn-write-free').addEventListener('click', async () => {
+      try { const { url } = await createCheckoutSession(); window.location.href = url }
+      catch (err) { console.error(err) }
+    })
+  }
+}
+
+// ── Load reviews ──────────────────────────────────────────────────
+async function loadReviews() {
+  const db = await supabase()
+  const { data, error } = await db
+    .from('tool_reviews')
+    .select('*, profiles:user_id(display_name)')
+    .order('created_at', { ascending: false })
+  if (error) { console.error('loadReviews:', error); allReviews = [] }
+  else allReviews = data || []
+}
+
+// ── Summary bar ───────────────────────────────────────────────────
+function renderSummaryBar() {
+  const bar = document.getElementById('summary-bar')
+  if (allReviews.length === 0) { bar.style.display = 'none'; return }
+
+  bar.style.display = 'flex'
+  const avg = allReviews.reduce((s, r) => s + r.rating, 0) / allReviews.length
+  const counts = [5,4,3,2,1].map(n => ({ n, c: allReviews.filter(r => r.rating === n).length }))
+  const maxCount = Math.max(...counts.map(c => c.c), 1)
+
+  bar.innerHTML = `
+    <div class="summary-avg">
+      <div class="summary-score">${avg.toFixed(1)}</div>
+      <div class="stars">${starsHtml(Math.round(avg))}</div>
+      <div class="summary-label">${allReviews.length} review${allReviews.length === 1 ? '' : 's'}</div>
+    </div>
+    <div class="summary-breakdown">
+      ${counts.map(({ n, c }) => `
+        <div class="breakdown-row">
+          <span class="breakdown-label">${n}★</span>
+          <div class="breakdown-bar-wrap"><div class="breakdown-bar" style="width:${Math.round((c/maxCount)*100)}%"></div></div>
+          <span class="breakdown-count">${c}</span>
+        </div>
+      `).join('')}
+    </div>
+  `
+}
+
+// ── Filter & render ───────────────────────────────────────────────
+function applyFilters() {
+  const q      = document.getElementById('search-input').value.trim().toLowerCase()
+  const cat    = document.getElementById('filter-cat').value
+  const minRat = parseInt(document.getElementById('filter-rating').value) || 0
+  const sort   = document.getElementById('filter-sort').value
+
+  let items = allReviews
+  if (q)      items = items.filter(r => r.tool_name.toLowerCase().includes(q) || (r.brand||'').toLowerCase().includes(q) || (r.review_body||'').toLowerCase().includes(q))
+  if (cat)    items = items.filter(r => r.category_tag === cat)
+  if (minRat) items = items.filter(r => r.rating >= minRat)
+
+  if (sort === 'highest') items = [...items].sort((a,b) => b.rating - a.rating)
+  else if (sort === 'lowest') items = [...items].sort((a,b) => a.rating - b.rating)
+  // 'newest' is already sorted by created_at desc from DB
+
+  renderGrid(items)
+  const n = items.length
+  document.getElementById('result-count').textContent = n > 0 ? `${n} review${n === 1 ? '' : 's'}` : ''
+}
+
+document.getElementById('search-input').addEventListener('input', applyFilters)
+document.getElementById('filter-cat').addEventListener('change', applyFilters)
+document.getElementById('filter-rating').addEventListener('change', applyFilters)
+document.getElementById('filter-sort').addEventListener('change', applyFilters)
+
+function renderGrid(items = allReviews) {
+  const grid = document.getElementById('review-grid')
+
+  if (items.length === 0) {
+    const isFiltered = document.getElementById('search-input').value ||
+                       document.getElementById('filter-cat').value ||
+                       document.getElementById('filter-rating').value
+    grid.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">${isFiltered ? '🔍' : '⭐'}</div>
+        <div class="empty-heading">${isFiltered ? 'No reviews match' : 'No reviews yet'}</div>
+        <p class="empty-sub">${isFiltered ? 'Try a different search or filter.' : 'Be the first to review a homesteading tool and help the community choose the right gear.'}</p>
+        ${isPro && !isFiltered ? '<button class="btn-write" id="empty-write">Write the first review</button>' : ''}
+      </div>
+    `
+    document.getElementById('empty-write')?.addEventListener('click', openAdd)
+    return
+  }
+
+  grid.innerHTML = items.map(r => {
+    const isOwn    = r.user_id === userId
+    const catLabel = CAT_LABELS[r.category_tag] || ''
+    const author   = r.profiles?.display_name || 'Homesteader'
+    const dateStr  = new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    const bodyTrunc = r.review_body && r.review_body.length > 220
+
+    return `
+      <div class="review-card" data-id="${esc(r.id)}">
+        <div class="review-card-top">
+          <div class="review-tool-info">
+            <div class="review-tool-name">${esc(r.tool_name)}</div>
+            ${r.brand ? `<div class="review-brand">${esc(r.brand)}</div>` : ''}
+          </div>
+          ${isOwn ? `
+            <div class="review-own-actions">
+              <button class="btn-icon" title="Edit" data-edit="${esc(r.id)}">
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M9.5 2.5l2 2-7 7H2.5v-2l7-7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+              </button>
+              <button class="btn-icon delete" title="Delete" data-delete="${esc(r.id)}">
+                <svg width="12" height="13" viewBox="0 0 12 14" fill="none"><path d="M1 3h10M4 3V2h4v1M3 3l.5 9h5l.5-9H3z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+          ` : ''}
+        </div>
+
+        <div class="stars">
+          ${starsHtml(r.rating)}
+          <span class="rating-num">${r.rating}.0</span>
+        </div>
+
+        <div class="review-badges">
+          ${catLabel ? `<span class="badge-cat">${esc(catLabel)}</span>` : ''}
+          ${r.verified_purchase ? `<span class="badge-verified"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#166534" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Verified</span>` : ''}
+        </div>
+
+        ${(r.pros || r.cons) ? `
+          <div class="pros-cons">
+            ${r.pros ? `<div class="pc-block"><div class="pc-label pros">Pros</div><div class="pc-text">${esc(r.pros)}</div></div>` : '<div></div>'}
+            ${r.cons ? `<div class="pc-block"><div class="pc-label cons">Cons</div><div class="pc-text">${esc(r.cons)}</div></div>` : '<div></div>'}
+          </div>
+        ` : ''}
+
+        ${r.review_body ? `
+          <div>
+            <div class="${bodyTrunc ? 'review-body-text' : 'review-body-full'}" id="body-${esc(r.id)}">${esc(r.review_body)}</div>
+            ${bodyTrunc ? `<button class="btn-read-more" data-expand="${esc(r.id)}">Read more</button>` : ''}
+          </div>
+        ` : ''}
+
+        <div class="review-footer">
+          <span><span class="review-author">${esc(author)}</span></span>
+          <span>${dateStr}</span>
+        </div>
+      </div>
+    `
+  }).join('')
+
+  // Wire events
+  grid.querySelectorAll('[data-edit]').forEach(btn => btn.addEventListener('click', () => openEdit(btn.dataset.edit)))
+  grid.querySelectorAll('[data-delete]').forEach(btn => btn.addEventListener('click', () => deleteReview(btn.dataset.delete)))
+  grid.querySelectorAll('[data-expand]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id  = btn.dataset.expand
+      const el  = document.getElementById(`body-${id}`)
+      el.className = 'review-body-full'
+      btn.remove()
+    })
+  })
+}
+
+// ── Star picker ───────────────────────────────────────────────────
+function initStarPicker(initial = 0) {
+  ratingVal = initial
+  const btns  = document.querySelectorAll('.star-btn')
+  const label = document.getElementById('star-label')
+
+  function updateStars(hover) {
+    const val = hover || ratingVal
+    btns.forEach(b => b.classList.toggle('active', parseInt(b.dataset.val) <= val))
+    label.textContent = val > 0 ? STAR_LABELS[val] : 'Select a rating'
+  }
+  updateStars(ratingVal)
+  document.getElementById('f-rating').value = ratingVal || ''
+
+  btns.forEach(btn => {
+    btn.addEventListener('mouseenter', () => updateStars(parseInt(btn.dataset.val)))
+    btn.addEventListener('mouseleave', () => updateStars(0))
+    btn.addEventListener('click', () => {
+      ratingVal = parseInt(btn.dataset.val)
+      document.getElementById('f-rating').value = ratingVal
+      updateStars(0)
+    })
+  })
+}
+
+// ── Drawer ─────────────────────────────────────────────────────────
+function openAdd() {
+  editingId = null
+  document.getElementById('review-form').reset()
+  document.getElementById('edit-id').value = ''
+  document.getElementById('drawer-title').textContent = 'Write a Review'
+  document.getElementById('btn-save').querySelector('.btn-label').textContent = 'Submit Review'
+  clearAlert()
+  initStarPicker(0)
+  openOverlay()
+}
+
+function openEdit(id) {
+  const r = allReviews.find(x => x.id === id)
+  if (!r || r.user_id !== userId) return
+  editingId = id
+
+  document.getElementById('edit-id').value     = id
+  document.getElementById('f-tool-name').value = r.tool_name || ''
+  document.getElementById('f-brand').value     = r.brand || ''
+  document.getElementById('f-cat').value        = r.category_tag || ''
+  document.getElementById('f-pros').value       = r.pros || ''
+  document.getElementById('f-cons').value       = r.cons || ''
+  document.getElementById('f-body').value       = r.review_body || ''
+  document.getElementById('f-verified').checked = r.verified_purchase !== false
+  document.getElementById('drawer-title').textContent = 'Edit Review'
+  document.getElementById('btn-save').querySelector('.btn-label').textContent = 'Save Changes'
+  clearAlert()
+  initStarPicker(r.rating || 0)
+  openOverlay()
+}
+
+function openOverlay() {
+  document.getElementById('overlay').classList.add('open')
+  document.body.style.overflow = 'hidden'
+  setTimeout(() => document.getElementById('f-tool-name').focus(), 100)
+}
+function closeOverlay() {
+  document.getElementById('overlay').classList.remove('open')
+  document.body.style.overflow = ''
+}
+
+document.getElementById('btn-close').addEventListener('click', closeOverlay)
+document.getElementById('btn-cancel').addEventListener('click', closeOverlay)
+document.getElementById('overlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeOverlay() })
+document.getElementById('btn-upgrade-banner')?.addEventListener('click', async () => {
+  try { const { url } = await createCheckoutSession(); window.location.href = url }
+  catch (err) { console.error(err) }
+})
+
+// ── Save review ───────────────────────────────────────────────────
+document.getElementById('review-form').addEventListener('submit', async (e) => {
+  e.preventDefault()
+  clearAlert()
+
+  const toolName = document.getElementById('f-tool-name').value.trim()
+  const rating   = parseInt(document.getElementById('f-rating').value)
+
+  if (!toolName) { showAlert('Please enter the tool name.'); return }
+  if (!rating || rating < 1 || rating > 5) { showAlert('Please select a rating.'); return }
+
+  const btn = document.getElementById('btn-save')
+  btn.classList.add('loading')
+  btn.disabled = true
+
+  try {
+    const db = await supabase()
+    const payload = {
+      user_id:          userId,
+      tool_name:        toolName,
+      brand:            document.getElementById('f-brand').value.trim() || null,
+      category_tag:     document.getElementById('f-cat').value || null,
+      rating,
+      pros:             document.getElementById('f-pros').value.trim() || null,
+      cons:             document.getElementById('f-cons').value.trim() || null,
+      review_body:      document.getElementById('f-body').value.trim() || null,
+      verified_purchase: document.getElementById('f-verified').checked,
+    }
+
+    if (editingId) {
+      const { data, error } = await db.from('tool_reviews').update(payload).eq('id', editingId).eq('user_id', userId).select('*, profiles:user_id(display_name)').single()
+      if (error) throw error
+      allReviews = allReviews.map(r => r.id === editingId ? data : r)
+    } else {
+      const { data, error } = await db.from('tool_reviews').insert(payload).select('*, profiles:user_id(display_name)').single()
+      if (error) throw error
+      allReviews = [data, ...allReviews]
+    }
+
+    closeOverlay()
+    renderSummaryBar()
+    applyFilters()
+  } catch (err) {
+    showAlert(err.message || 'Save failed. Please try again.')
+  } finally {
+    btn.classList.remove('loading')
+    btn.disabled = false
+  }
+})
+
+// ── Delete ────────────────────────────────────────────────────────
+async function deleteReview(id) {
+  if (!confirm('Delete this review?')) return
+  const db = await supabase()
+  const { error } = await db.from('tool_reviews').delete().eq('id', id).eq('user_id', userId)
+  if (error) { alert('Delete failed: ' + error.message); return }
+  allReviews = allReviews.filter(r => r.id !== id)
+  renderSummaryBar()
+  applyFilters()
+}
+
+// ── Alerts ────────────────────────────────────────────────────────
+function showAlert(msg) {
+  const el = document.getElementById('drawer-alert')
+  el.textContent = msg
+  el.className = 'drawer-alert show error'
+}
+function clearAlert() {
+  const el = document.getElementById('drawer-alert')
+  el.className = 'drawer-alert'
+  el.textContent = ''
+}
+</script>
+</body>
+</html>

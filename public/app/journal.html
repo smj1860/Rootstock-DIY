@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Build Journal — Rootstock</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/rootstock.css">
+  <style>
+    body { background: var(--cream); min-height: 100vh; }
+
+    /* ── Nav ──────────────────────────────────────────────────────── */
+    .app-nav { position: sticky; top: 0; z-index: 100; background: white; border-bottom: 1px solid var(--border); }
+    .app-nav-inner { max-width: 1100px; margin: 0 auto; padding: 0 var(--space-6); height: 56px; display: flex; align-items: center; gap: var(--space-6); }
+    .nav-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; flex-shrink: 0; }
+    .nav-logo-mark { width: 30px; height: 30px; background: var(--green-deep); border-radius: 7px; display: flex; align-items: center; justify-content: center; }
+    .nav-logo-name { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 600; color: var(--green-deep); letter-spacing: -0.3px; }
+    .nav-links { display: flex; align-items: center; gap: 2px; flex: 1; }
+    .nav-link { font-size: 14px; font-weight: 400; color: var(--muted); text-decoration: none; padding: 6px 10px; border-radius: 7px; transition: color 0.12s, background 0.12s; white-space: nowrap; }
+    .nav-link:hover { color: var(--green-deep); background: var(--green-pale); text-decoration: none; }
+    .nav-link.active { color: var(--green-deep); font-weight: 500; background: var(--green-pale); }
+    .nav-user { display: flex; align-items: center; gap: var(--space-3); margin-left: auto; flex-shrink: 0; }
+    .nav-user-name { font-size: 13.5px; font-weight: 500; color: var(--text); }
+    .tier-badge { font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 2px 8px; border-radius: 100px; }
+    .tier-free { background: var(--cream); color: var(--bark-light); border: 1px solid var(--border); }
+    .tier-pro  { background: var(--green-deep); color: var(--green-light); }
+    .btn-signout { font-size: 13px; color: var(--muted); background: none; border: none; cursor: pointer; padding: 5px 8px; border-radius: 6px; font-family: 'DM Sans', sans-serif; transition: color 0.12s, background 0.12s; }
+    .btn-signout:hover { color: var(--text); background: var(--cream); }
+
+    .skel { border-radius: 6px; background: linear-gradient(90deg, #ece9e1 25%, #f4f1e9 50%, #ece9e1 75%); background-size: 200% 100%; animation: shimmer 1.3s infinite; }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    /* ── Layout ──────────────────────────────────────────────────── */
+    .main { max-width: 860px; margin: 0 auto; padding: 2.5rem var(--space-6) 5rem; }
+
+    /* ── Pro gate wall ────────────────────────────────────────────── */
+    .gate-wall { text-align: center; padding: 4rem 2rem; background: white; border: 1.5px solid var(--border); border-radius: var(--radius-xl); margin-top: 2rem; }
+    .gate-icon { font-size: 48px; margin-bottom: var(--space-4); }
+    .gate-eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.13em; text-transform: uppercase; color: var(--green-mid); margin-bottom: var(--space-2); }
+    .gate-heading { font-family: 'Playfair Display', serif; font-size: clamp(22px, 3vw, 28px); font-weight: 500; color: var(--green-deep); margin-bottom: var(--space-3); }
+    .gate-sub { font-size: 14.5px; color: var(--muted); line-height: 1.65; max-width: 400px; margin: 0 auto var(--space-5); }
+    .gate-perks { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-2); margin-bottom: var(--space-5); }
+    .gate-perk { font-size: 13px; color: var(--green-deep); background: var(--green-pale); border-radius: 100px; padding: 4px 12px; }
+    .btn-upgrade { display: inline-flex; align-items: center; gap: 7px; background: var(--green-mid); color: var(--green-pale); font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; padding: 12px 26px; border: none; border-radius: 10px; cursor: pointer; text-decoration: none; transition: background 0.12s; }
+    .btn-upgrade:hover { background: var(--green-deep); text-decoration: none; }
+
+    /* ── Page header ──────────────────────────────────────────────── */
+    .page-header { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-4); margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .page-title-block { flex: 1; min-width: 200px; }
+    .page-title { font-family: 'Playfair Display', serif; font-size: clamp(22px, 3vw, 28px); font-weight: 500; color: var(--green-deep); margin-bottom: 3px; }
+    .page-sub { font-size: 14px; color: var(--muted); }
+    .btn-add { display: inline-flex; align-items: center; gap: 6px; background: var(--green-mid); color: var(--green-pale); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; padding: 9px 18px; border: none; border-radius: 9px; cursor: pointer; transition: background 0.12s; white-space: nowrap; flex-shrink: 0; }
+    .btn-add:hover { background: var(--green-deep); }
+
+    /* ── Project filter tabs ──────────────────────────────────────── */
+    .project-filter { display: flex; gap: var(--space-2); margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .filter-tab { font-size: 13px; font-weight: 400; color: var(--muted); background: white; border: 1px solid var(--border); border-radius: 100px; padding: 5px 14px; cursor: pointer; transition: all 0.12s; font-family: 'DM Sans', sans-serif; }
+    .filter-tab:hover { color: var(--green-deep); border-color: var(--green-mid); }
+    .filter-tab.active { background: var(--green-deep); color: var(--green-light); border-color: var(--green-deep); font-weight: 500; }
+
+    /* ── Entry list ───────────────────────────────────────────────── */
+    .entry-list { display: flex; flex-direction: column; gap: var(--space-4); }
+    .entry-card { background: white; border: 1px solid var(--border); border-radius: var(--radius-xl); overflow: hidden; transition: box-shadow 0.15s, border-color 0.15s; }
+    .entry-card:hover { box-shadow: 0 4px 20px rgba(31,61,12,0.07); border-color: rgba(92,74,42,0.22); }
+    .entry-lead-img { width: 100%; height: 220px; object-fit: cover; display: block; }
+    .entry-body { padding: var(--space-4) var(--space-5); }
+    .entry-meta-row { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-2); flex-wrap: wrap; }
+    .entry-date { font-size: 12px; color: var(--muted); }
+    .entry-project-tag { font-size: 11.5px; font-weight: 500; color: var(--green-mid); background: var(--green-pale); border-radius: 100px; padding: 2px 10px; }
+    .entry-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 500; color: var(--green-deep); margin-bottom: var(--space-2); line-height: 1.3; }
+    .entry-excerpt { font-size: 14px; color: var(--muted); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .entry-footer { display: flex; align-items: center; justify-content: space-between; margin-top: var(--space-3); padding-top: var(--space-3); border-top: 1px solid var(--border); }
+    .entry-photo-count { font-size: 12.5px; color: var(--muted); display: flex; align-items: center; gap: 5px; }
+    .entry-actions { display: flex; gap: 4px; }
+    .btn-icon { width: 28px; height: 28px; border: none; background: none; cursor: pointer; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--muted); transition: background 0.12s, color 0.12s; }
+    .btn-icon:hover { background: var(--cream); color: var(--text); }
+    .btn-icon.delete:hover { background: #fef2f2; color: #991b1b; }
+
+    /* ── Empty state ──────────────────────────────────────────────── */
+    .empty-state { text-align: center; padding: 4rem 2rem; background: white; border: 1.5px dashed var(--border); border-radius: var(--radius-xl); }
+    .empty-icon { font-size: 40px; margin-bottom: var(--space-3); }
+    .empty-heading { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 500; color: var(--green-deep); margin-bottom: 6px; }
+    .empty-sub { font-size: 14px; color: var(--muted); margin-bottom: var(--space-4); max-width: 320px; margin-left: auto; margin-right: auto; }
+
+    /* ── Drawer ───────────────────────────────────────────────────── */
+    .overlay { position: fixed; inset: 0; background: rgba(26,26,20,0.45); z-index: 200; display: none; align-items: flex-end; backdrop-filter: blur(2px); }
+    .overlay.open { display: flex; }
+    @media (min-width: 700px) { .overlay { align-items: center; justify-content: center; } }
+    .drawer { background: white; width: 100%; max-width: 600px; border-radius: 20px 20px 0 0; padding: 1.75rem 1.5rem 2rem; box-shadow: 0 -8px 40px rgba(31,61,12,0.12); transform: translateY(100%); transition: transform 0.28s cubic-bezier(0.32,0.72,0,1); max-height: 92vh; overflow-y: auto; }
+    @media (min-width: 700px) { .drawer { border-radius: 20px; transform: scale(0.96); opacity: 0; transition: transform 0.22s ease, opacity 0.22s ease; } }
+    .overlay.open .drawer { transform: translateY(0); }
+    @media (min-width: 700px) { .overlay.open .drawer { transform: scale(1); opacity: 1; } }
+    .drawer-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+    .drawer-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 500; color: var(--green-deep); }
+    .btn-close { width: 32px; height: 32px; border: none; background: var(--cream); cursor: pointer; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--muted); }
+    .btn-close:hover { background: #ece9e1; color: var(--text); }
+    .form-row { margin-bottom: 1rem; }
+    .form-row label { display: block; font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 5px; }
+    .form-row label .opt { font-weight: 400; color: var(--muted); }
+    .field-input { width: 100%; font-family: 'DM Sans', sans-serif; font-size: 14.5px; color: var(--text); background: var(--cream); border: 1px solid var(--border); border-radius: 9px; padding: 10px 13px; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
+    .field-input:focus { border-color: var(--green-mid); box-shadow: 0 0 0 3px rgba(59,109,17,0.1); background: white; }
+    .field-input::placeholder { color: var(--muted); opacity: 0.55; }
+    select.field-input { appearance: none; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236b6b58' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 13px center; padding-right: 34px; }
+    textarea.field-input { resize: vertical; min-height: 160px; font-size: 14px; line-height: 1.6; }
+    .photo-strip { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-2); }
+    .photo-thumb { position: relative; width: 80px; height: 80px; }
+    .photo-thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; display: block; }
+    .photo-thumb-remove { position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; background: var(--text); border: none; border-radius: 50%; cursor: pointer; color: white; font-size: 13px; line-height: 1; display: flex; align-items: center; justify-content: center; }
+    .add-photo-btn { width: 80px; height: 80px; border: 2px dashed var(--border); border-radius: 8px; background: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 11px; color: var(--muted); font-family: 'DM Sans', sans-serif; transition: border-color 0.12s, background 0.12s; }
+    .add-photo-btn:hover { border-color: var(--green-mid); background: var(--green-pale); color: var(--green-deep); }
+    .drawer-alert { padding: 9px 13px; border-radius: 8px; font-size: 13px; margin-bottom: 1rem; display: none; line-height: 1.5; }
+    .drawer-alert.show { display: block; }
+    .drawer-alert.error   { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+    .drawer-alert.success { background: var(--green-pale); color: var(--green-deep); border: 1px solid var(--green-light); }
+    .drawer-footer { display: flex; gap: var(--space-3); margin-top: 1.25rem; }
+    .btn-primary { flex: 1; padding: 11px; background: var(--green-mid); color: var(--green-pale); border: none; border-radius: 9px; font-family: 'DM Sans', sans-serif; font-size: 14.5px; font-weight: 500; cursor: pointer; transition: background 0.12s; display: flex; align-items: center; justify-content: center; gap: 7px; }
+    .btn-primary:hover:not(:disabled) { background: var(--green-deep); }
+    .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
+    .btn-secondary { padding: 11px 18px; background: white; color: var(--text); border: 1px solid var(--border); border-radius: 9px; font-family: 'DM Sans', sans-serif; font-size: 14.5px; font-weight: 400; cursor: pointer; transition: background 0.12s; }
+    .btn-secondary:hover { background: var(--cream); }
+    .spin { width: 15px; height: 15px; border: 2px solid rgba(192,221,151,0.4); border-top-color: var(--green-light); border-radius: 50%; animation: rotate 0.6s linear infinite; display: none; }
+    @keyframes rotate { to { transform: rotate(360deg); } }
+    .btn-primary.loading .spin { display: block; }
+    .btn-primary.loading .btn-label { display: none; }
+
+    @media (max-width: 640px) { .nav-links { display: none; } .page-header { flex-direction: column; align-items: flex-start; } }
+  </style>
+</head>
+<body>
+
+<!-- ── Navigation ──────────────────────────────────────────────────── -->
+<nav class="app-nav">
+  <div class="app-nav-inner">
+    <a href="/app/" class="nav-logo">
+      <div class="nav-logo-mark">
+        <svg width="18" height="18" viewBox="0 0 22 22" fill="none">
+          <path d="M11 3C11 3 7 7 7 12C7 15 9 17 11 18C13 17 15 15 15 12C15 7 11 3 11 3Z" fill="#C0DD97"/>
+          <path d="M11 18L11 21" stroke="#C0DD97" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M11 15C8 13 6 14 6 14" stroke="#C0DD97" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="M11 17C13.5 15 15.5 16 15.5 16" stroke="#C0DD97" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="nav-logo-name">Rootstock</span>
+    </a>
+
+    <div class="nav-links">
+      <a href="/app/"              class="nav-link">Dashboard</a>
+      <a href="/app/project.html"  class="nav-link">New Project</a>
+      <a href="/app/inventory.html"    class="nav-link">Inventory</a>
+      <a href="/app/journal.html"      class="nav-link active">Journal</a>
+      <a href="/app/forum.html"        class="nav-link">Forum</a>
+      <a href="/app/tool-reviews.html" class="nav-link">Reviews</a>
+      <a href="/app/settings.html" class="nav-link">Settings</a>
+    </div>
+
+    <div class="nav-user" id="nav-user">
+      <div class="skel" style="width:80px;height:16px;"></div>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Main ─────────────────────────────────────────────────────────── -->
+<main class="main" id="main" style="display:none;"></main>
+
+<!-- Loading skeleton -->
+<div id="loading" style="max-width:860px;margin:2.5rem auto;padding:0 1.5rem;">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;">
+    <div style="display:flex;flex-direction:column;gap:8px;"><div class="skel" style="height:28px;width:200px;"></div><div class="skel" style="height:14px;width:280px;"></div></div>
+    <div class="skel" style="height:38px;width:130px;border-radius:9px;"></div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:16px;">
+    <div style="background:white;border:1px solid var(--border);border-radius:16px;overflow:hidden;">
+      <div class="skel" style="height:180px;border-radius:0;"></div>
+      <div style="padding:20px;display:flex;flex-direction:column;gap:10px;"><div class="skel" style="height:18px;width:60%;"></div><div class="skel" style="height:13px;width:90%;"></div><div class="skel" style="height:13px;width:75%;"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Entry drawer ───────────────────────────────────────────────── -->
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="Journal entry editor">
+  <div class="drawer" id="drawer">
+    <div class="drawer-header">
+      <h2 class="drawer-title" id="drawer-title">New Entry</h2>
+      <button class="btn-close" id="btn-close" aria-label="Close">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+
+    <div class="drawer-alert" id="drawer-alert"></div>
+
+    <form id="entry-form" novalidate>
+      <input type="hidden" id="edit-id">
+
+      <div class="form-row">
+        <label for="f-title">Title</label>
+        <input type="text" id="f-title" class="field-input" placeholder="e.g. Day 1 — framing the south wall" required>
+      </div>
+
+      <div class="form-row">
+        <label for="f-project">Project <span class="opt">(optional)</span></label>
+        <select id="f-project" class="field-input">
+          <option value="">— None / General —</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label for="f-date">Date</label>
+        <input type="date" id="f-date" class="field-input">
+      </div>
+
+      <div class="form-row">
+        <label for="f-body">Journal entry</label>
+        <textarea id="f-body" class="field-input" placeholder="What did you work on today? What went well, what didn't? Measurements, observations, notes for next time…"></textarea>
+      </div>
+
+      <div class="form-row">
+        <label>Photos <span class="opt">(up to 10)</span></label>
+        <div class="photo-strip" id="photo-strip">
+          <button type="button" class="add-photo-btn" id="btn-add-photo">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            Photo
+          </button>
+          <input type="file" id="file-input" accept="image/*" multiple style="display:none;">
+        </div>
+      </div>
+
+      <div class="drawer-footer">
+        <button type="button" class="btn-secondary" id="btn-cancel">Cancel</button>
+        <button type="submit" class="btn-primary" id="btn-save">
+          <span class="btn-label">Save Entry</span>
+          <span class="spin"></span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script type="module">
+import { requireAuth, getProfile, signOut, supabase } from '/js/auth.js'
+import { createCheckoutSession } from '/js/api.js'
+
+// ── Init ──────────────────────────────────────────────────────────
+const session = await requireAuth()
+if (!session) throw new Error('Not authenticated')
+const userId = session.user.id
+
+const profile = await getProfile()
+const isPro = profile?.subscription_tier === 'pro'
+
+renderNav(profile, session.user.email)
+
+if (!isPro) {
+  renderGateWall()
+} else {
+  await Promise.all([loadProjects(), loadEntries()])
+  renderProLayout()
+}
+
+document.getElementById('loading').style.display = 'none'
+document.getElementById('main').style.display = 'block'
+
+function esc(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+}
+
+// ── State ─────────────────────────────────────────────────────────
+let allEntries    = []
+let allProjects   = []
+let filterProject = ''
+let pendingPhotos = []   // { file, previewUrl }
+let editingImgs   = []   // existing images for current edit
+
+// ── Nav ───────────────────────────────────────────────────────────
+function renderNav(profile, email) {
+  const name = esc(profile?.display_name || email?.split('@')[0] || 'Account')
+  const tier = isPro
+    ? '<span class="tier-badge tier-pro">Pro</span>'
+    : '<span class="tier-badge tier-free">Free</span>'
+  document.getElementById('nav-user').innerHTML = `
+    <span class="nav-user-name">${name}</span>
+    ${tier}
+    <button class="btn-signout" id="btn-signout">Sign out</button>
+  `
+  document.getElementById('btn-signout').addEventListener('click', () => signOut())
+}
+
+// ── Gate wall ─────────────────────────────────────────────────────
+function renderGateWall() {
+  document.getElementById('main').innerHTML = `
+    <h1 class="page-title" style="font-family:'Playfair Display',serif;font-size:clamp(22px,3vw,28px);font-weight:500;color:var(--green-deep);margin-bottom:1.5rem;">Build Journal</h1>
+    <div class="gate-wall">
+      <div class="gate-icon">📔</div>
+      <div class="gate-eyebrow">Pro Feature</div>
+      <h2 class="gate-heading">Document your builds, step by step.</h2>
+      <p class="gate-sub">The build journal lets you track progress on every project with dated entries, notes, and photos. Look back at what you built, when, and how.</p>
+      <div class="gate-perks">
+        <span class="gate-perk">Unlimited journal entries</span>
+        <span class="gate-perk">Photos per entry</span>
+        <span class="gate-perk">Linked to your projects</span>
+        <span class="gate-perk">Private to your account</span>
+      </div>
+      <button class="btn-upgrade" id="btn-gate-upgrade">Upgrade to Pro — $9/mo →</button>
+    </div>
+  `
+  document.getElementById('btn-gate-upgrade').addEventListener('click', async () => {
+    try { const { url } = await createCheckoutSession(); window.location.href = url }
+    catch (err) { console.error(err) }
+  })
+}
+
+// ── Load data ─────────────────────────────────────────────────────
+async function loadProjects() {
+  const db = await supabase()
+  const { data } = await db.from('projects').select('id, title, category').eq('user_id', userId).order('created_at', { ascending: false })
+  allProjects = data || []
+}
+
+async function loadEntries() {
+  const db = await supabase()
+  const { data } = await db
+    .from('journal_entries')
+    .select('*, journal_images(id, image_url, sort_order)')
+    .eq('user_id', userId)
+    .order('entry_date', { ascending: false })
+  allEntries = (data || []).map(e => ({ ...e, journal_images: (e.journal_images || []).sort((a,b) => a.sort_order - b.sort_order) }))
+}
+
+// ── Pro layout ────────────────────────────────────────────────────
+function renderProLayout() {
+  document.getElementById('main').innerHTML = `
+    <div class="page-header">
+      <div class="page-title-block">
+        <h1 class="page-title">Build Journal</h1>
+        <p class="page-sub">Document your projects as you go.</p>
+      </div>
+      <button class="btn-add" id="btn-add">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        New Entry
+      </button>
+    </div>
+    <div class="project-filter" id="project-filter"></div>
+    <div class="entry-list" id="entry-list"></div>
+  `
+  document.getElementById('btn-add').addEventListener('click', openAdd)
+  renderProjectFilter()
+  renderEntries()
+}
+
+// ── Project filter ────────────────────────────────────────────────
+function renderProjectFilter() {
+  const container = document.getElementById('project-filter')
+  if (!container) return
+  const tabs = [`<button class="filter-tab${!filterProject ? ' active' : ''}" data-pid="">All entries</button>`]
+  allProjects.forEach(p => {
+    tabs.push(`<button class="filter-tab${filterProject === p.id ? ' active' : ''}" data-pid="${esc(p.id)}">${esc(p.title || 'Untitled')}</button>`)
+  })
+  container.innerHTML = tabs.join('')
+  container.querySelectorAll('.filter-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      filterProject = tab.dataset.pid
+      renderProjectFilter()
+      renderEntries()
+    })
+  })
+}
+
+// ── Render entries ────────────────────────────────────────────────
+function renderEntries() {
+  const list = document.getElementById('entry-list')
+  if (!list) return
+  const entries = filterProject ? allEntries.filter(e => e.project_id === filterProject) : allEntries
+
+  if (entries.length === 0) {
+    list.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">📔</div>
+        <div class="empty-heading">${filterProject ? 'No entries for this project' : 'Your journal is empty'}</div>
+        <p class="empty-sub">${filterProject ? 'Add the first entry for this project.' : 'Start documenting your first build. A few lines and a photo is all it takes.'}</p>
+        <button class="btn-add" id="empty-add">Add first entry</button>
+      </div>
+    `
+    document.getElementById('empty-add')?.addEventListener('click', openAdd)
+    return
+  }
+
+  list.innerHTML = entries.map(entry => {
+    const images  = entry.journal_images || []
+    const leadImg = images[0]
+    const project = allProjects.find(p => p.id === entry.project_id)
+    const dateStr = entry.entry_date
+      ? new Date(entry.entry_date + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+      : ''
+    return `
+      <div class="entry-card">
+        ${leadImg ? `<img src="${esc(leadImg.image_url)}" alt="" class="entry-lead-img" loading="lazy">` : ''}
+        <div class="entry-body">
+          <div class="entry-meta-row">
+            ${dateStr ? `<span class="entry-date">${dateStr}</span>` : ''}
+            ${project ? `<span class="entry-project-tag">${esc(project.title || 'Project')}</span>` : ''}
+          </div>
+          <div class="entry-title">${esc(entry.title)}</div>
+          ${entry.body ? `<p class="entry-excerpt">${esc(entry.body)}</p>` : ''}
+          <div class="entry-footer">
+            <span class="entry-photo-count">
+              ${images.length > 0 ? `<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="1" width="11" height="11" rx="2" stroke="currentColor" stroke-width="1.3"/><circle cx="4.5" cy="4.5" r="1.2" fill="currentColor"/><path d="M1 9l3-3 2.5 2.5 2-2L12 10" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg> ${images.length} photo${images.length === 1 ? '' : 's'}` : ''}
+            </span>
+            <div class="entry-actions">
+              <button class="btn-icon" title="Edit" data-edit="${esc(entry.id)}">
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M9.5 2.5l2 2-7 7H2.5v-2l7-7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+              </button>
+              <button class="btn-icon delete" title="Delete" data-delete="${esc(entry.id)}">
+                <svg width="12" height="13" viewBox="0 0 12 14" fill="none"><path d="M1 3h10M4 3V2h4v1M3 3l.5 9h5l.5-9H3z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `
+  }).join('')
+
+  list.querySelectorAll('[data-edit]').forEach(btn => btn.addEventListener('click', () => openEdit(btn.dataset.edit)))
+  list.querySelectorAll('[data-delete]').forEach(btn => btn.addEventListener('click', () => deleteEntry(btn.dataset.delete)))
+}
+
+// ── Drawer ─────────────────────────────────────────────────────────
+function populateProjectSelect(selectedId) {
+  const sel = document.getElementById('f-project')
+  sel.innerHTML = '<option value="">— None / General —</option>'
+  allProjects.forEach(p => {
+    const opt = document.createElement('option')
+    opt.value = p.id
+    opt.textContent = p.title || 'Untitled project'
+    if (p.id === selectedId) opt.selected = true
+    sel.appendChild(opt)
+  })
+}
+
+function todayValue() { return new Date().toISOString().slice(0, 10) }
+
+function openAdd() {
+  pendingPhotos = []
+  editingImgs   = []
+  document.getElementById('entry-form').reset()
+  document.getElementById('edit-id').value = ''
+  document.getElementById('f-date').value = todayValue()
+  document.getElementById('drawer-title').textContent = 'New Entry'
+  document.getElementById('btn-save').querySelector('.btn-label').textContent = 'Save Entry'
+  populateProjectSelect(filterProject || '')
+  clearAlert()
+  renderPhotoStrip()
+  openOverlay()
+}
+
+function openEdit(id) {
+  const entry = allEntries.find(e => e.id === id)
+  if (!entry) return
+  pendingPhotos = []
+  editingImgs   = [...(entry.journal_images || [])]
+
+  document.getElementById('edit-id').value  = id
+  document.getElementById('f-title').value  = entry.title || ''
+  document.getElementById('f-date').value   = entry.entry_date || todayValue()
+  document.getElementById('f-body').value   = entry.body || ''
+  document.getElementById('drawer-title').textContent = 'Edit Entry'
+  document.getElementById('btn-save').querySelector('.btn-label').textContent = 'Save Changes'
+  populateProjectSelect(entry.project_id || '')
+  clearAlert()
+  renderPhotoStrip()
+  openOverlay()
+}
+
+function openOverlay() {
+  document.getElementById('overlay').classList.add('open')
+  document.body.style.overflow = 'hidden'
+  setTimeout(() => document.getElementById('f-title').focus(), 100)
+}
+function closeOverlay() {
+  document.getElementById('overlay').classList.remove('open')
+  document.body.style.overflow = ''
+}
+
+document.getElementById('btn-close').addEventListener('click', closeOverlay)
+document.getElementById('btn-cancel').addEventListener('click', closeOverlay)
+document.getElementById('overlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeOverlay() })
+
+// ── Photo strip ───────────────────────────────────────────────────
+function renderPhotoStrip() {
+  const strip = document.getElementById('photo-strip')
+  const existingHtml = editingImgs.map(img => `
+    <div class="photo-thumb">
+      <img src="${esc(img.image_url)}" alt="">
+      <button type="button" class="photo-thumb-remove" data-remove-img="${esc(img.id)}">×</button>
+    </div>
+  `).join('')
+  const pendingHtml = pendingPhotos.map((p, i) => `
+    <div class="photo-thumb">
+      <img src="${esc(p.previewUrl)}" alt="">
+      <button type="button" class="photo-thumb-remove" data-remove-pending="${i}">×</button>
+    </div>
+  `).join('')
+  const total = editingImgs.length + pendingPhotos.length
+  const addBtn = total < 10 ? `
+    <button type="button" class="add-photo-btn" id="btn-add-photo">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      Photo
+    </button>
+    <input type="file" id="file-input" accept="image/*" multiple style="display:none;">
+  ` : ''
+  strip.innerHTML = existingHtml + pendingHtml + addBtn
+
+  strip.querySelectorAll('[data-remove-img]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const imgId = btn.dataset.removeImg
+      editingImgs = editingImgs.filter(i => i.id !== imgId)
+      // Mark for deletion — will remove from DB on save
+      renderPhotoStrip()
+    })
+  })
+  strip.querySelectorAll('[data-remove-pending]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const i = parseInt(btn.dataset.removePending)
+      pendingPhotos.splice(i, 1)
+      renderPhotoStrip()
+    })
+  })
+
+  const addPhotoBtn = document.getElementById('btn-add-photo')
+  const fileInput   = document.getElementById('file-input')
+  if (addPhotoBtn && fileInput) {
+    addPhotoBtn.addEventListener('click', () => fileInput.click())
+    fileInput.addEventListener('change', () => {
+      Array.from(fileInput.files).forEach(f => {
+        if (editingImgs.length + pendingPhotos.length < 10) {
+          pendingPhotos.push({ file: f, previewUrl: URL.createObjectURL(f) })
+        }
+      })
+      renderPhotoStrip()
+    })
+  }
+}
+
+// ── Save entry ────────────────────────────────────────────────────
+document.getElementById('entry-form').addEventListener('submit', async (e) => {
+  e.preventDefault()
+  clearAlert()
+  const title = document.getElementById('f-title').value.trim()
+  if (!title) { showAlert('Please enter a title.', 'error'); return }
+
+  const btn = document.getElementById('btn-save')
+  btn.classList.add('loading')
+  btn.disabled = true
+
+  try {
+    const db    = await supabase()
+    const editId = document.getElementById('edit-id').value
+
+    const payload = {
+      user_id:    userId,
+      title,
+      body:       document.getElementById('f-body').value.trim() || null,
+      entry_date: document.getElementById('f-date').value || null,
+      project_id: document.getElementById('f-project').value || null,
+    }
+
+    let entryId = editId
+    if (editId) {
+      const { data, error } = await db.from('journal_entries').update(payload).eq('id', editId).eq('user_id', userId).select().single()
+      if (error) throw error
+      // Handle removed images
+      const originalEntry = allEntries.find(en => en.id === editId)
+      const removedImgs   = (originalEntry?.journal_images || []).filter(orig => !editingImgs.find(ei => ei.id === orig.id))
+      for (const img of removedImgs) {
+        await db.from('journal_images').delete().eq('id', img.id)
+        const path = img.image_url.split('/journal-images/').pop()
+        if (path) await db.storage.from('journal-images').remove([path])
+      }
+      allEntries = allEntries.map(en => en.id === editId ? { ...data, journal_images: editingImgs } : en)
+    } else {
+      const { data, error } = await db.from('journal_entries').insert(payload).select().single()
+      if (error) throw error
+      entryId = data.id
+      allEntries = [{ ...data, journal_images: [] }, ...allEntries]
+    }
+
+    // Upload pending photos
+    for (let i = 0; i < pendingPhotos.length; i++) {
+      const { file } = pendingPhotos[i]
+      const ext  = file.name.split('.').pop().toLowerCase()
+      const path = `${userId}/${entryId}/${Date.now()}-${i}.${ext}`
+      const { error: upErr } = await db.storage.from('journal-images').upload(path, file)
+      if (upErr) { console.error('Photo upload failed:', upErr); continue }
+      const { data: urlData } = db.storage.from('journal-images').getPublicUrl(path)
+      const { data: imgRow } = await db.from('journal_images').insert({ entry_id: entryId, image_url: urlData.publicUrl, sort_order: editingImgs.length + i }).select().single()
+      if (imgRow) {
+        const entry = allEntries.find(en => en.id === entryId)
+        if (entry) entry.journal_images = [...(entry.journal_images || []), imgRow]
+      }
+    }
+
+    closeOverlay()
+    renderEntries()
+    renderProjectFilter()
+  } catch (err) {
+    showAlert(err.message || 'Save failed. Please try again.', 'error')
+  } finally {
+    btn.classList.remove('loading')
+    btn.disabled = false
+  }
+})
+
+// ── Delete entry ──────────────────────────────────────────────────
+async function deleteEntry(id) {
+  if (!confirm('Delete this journal entry?')) return
+  const db = await supabase()
+  const entry = allEntries.find(e => e.id === id)
+  if (entry?.journal_images?.length) {
+    for (const img of entry.journal_images) {
+      const path = img.image_url.split('/journal-images/').pop()
+      if (path) await db.storage.from('journal-images').remove([path])
+    }
+    await db.from('journal_images').delete().eq('entry_id', id)
+  }
+  const { error } = await db.from('journal_entries').delete().eq('id', id).eq('user_id', userId)
+  if (error) { alert('Delete failed: ' + error.message); return }
+  allEntries = allEntries.filter(e => e.id !== id)
+  renderEntries()
+  renderProjectFilter()
+}
+
+// ── Alerts ────────────────────────────────────────────────────────
+function showAlert(msg, type = 'error') {
+  const el = document.getElementById('drawer-alert')
+  el.textContent = msg
+  el.className = `drawer-alert show ${type}`
+}
+function clearAlert() {
+  const el = document.getElementById('drawer-alert')
+  el.className = 'drawer-alert'
+  el.textContent = ''
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rootstock — Media Kit 2026</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --green-deep:  #1f3d0c;
+      --green-mid:   #3B6D11;
+      --green-light: #C0DD97;
+      --green-pale:  #EAF3DE;
+      --cream:       #F7F4EE;
+      --bark:        #5C4A2A;
+      --bark-light:  #A0845C;
+      --text:        #1a1a14;
+      --muted:       #6b6b58;
+      --border:      rgba(92,74,42,0.14);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); }
+
+    .cover { background: var(--green-deep); min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; padding: 3.5rem 4rem; page-break-after: always; }
+    .cover-logo { display: flex; align-items: center; gap: 16px; }
+    .cover-badge { width: 56px; height: 56px; background: rgba(192,221,151,0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(192,221,151,0.25); }
+    .cover-logo-name { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 600; color: #fff; letter-spacing: -0.5px; }
+    .cover-logo-sub  { font-size: 11px; color: var(--green-light); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 2px; }
+    .cover-body { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 4rem 0 2rem; }
+    .cover-eyebrow { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--green-light); margin-bottom: 1.25rem; }
+    .cover-headline { font-family: 'Playfair Display', serif; font-size: clamp(38px, 6vw, 64px); font-weight: 600; color: #fff; line-height: 1.1; max-width: 700px; margin-bottom: 1.75rem; }
+    .cover-headline span { color: var(--green-light); }
+    .cover-sub { font-size: 17px; font-weight: 300; color: rgba(255,255,255,0.65); max-width: 540px; line-height: 1.8; }
+    .cover-footer { display: flex; justify-content: space-between; align-items: flex-end; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); }
+    .cover-footer-left { font-size: 12px; color: rgba(255,255,255,0.4); line-height: 1.6; }
+    .cover-footer-right { font-size: 12px; color: rgba(255,255,255,0.4); text-align: right; line-height: 1.6; }
+
+    .page { max-width: 900px; margin: 0 auto; padding: 5rem 4rem; border-bottom: 1px solid var(--border); }
+    .section-eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.14em; color: var(--green-mid); text-transform: uppercase; margin-bottom: 0.6rem; }
+    .section-title { font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 500; color: var(--green-deep); line-height: 1.25; margin-bottom: 1rem; }
+    .section-body { font-size: 15px; font-weight: 300; color: var(--muted); line-height: 1.85; max-width: 680px; margin-bottom: 2.5rem; }
+    .divider { width: 48px; height: 2px; background: var(--green-light); border-radius: 2px; margin: 1.5rem 0 2.5rem; }
+
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 2.5rem; }
+    .stat-card { background: var(--green-deep); border-radius: 14px; padding: 1.5rem 1.25rem; }
+    .stat-num   { font-family: 'Playfair Display', serif; font-size: 34px; font-weight: 600; color: var(--green-light); line-height: 1; margin-bottom: 6px; }
+    .stat-label { font-size: 12px; font-weight: 400; color: rgba(192,221,151,0.65); }
+
+    .aud-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 2rem; }
+    .aud-item { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem 1.25rem; }
+    .aud-item-label { font-size: 11px; font-weight: 500; color: var(--bark-light); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
+    .aud-item-val   { font-size: 15px; font-weight: 500; color: var(--text); }
+
+    .value-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 2rem; }
+    .value-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; }
+    .value-icon { width: 38px; height: 38px; border-radius: 9px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; font-size: 18px; }
+    .value-card h4 { font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 6px; }
+    .value-card p  { font-size: 13px; font-weight: 300; color: var(--muted); line-height: 1.7; }
+
+    .legend-bar { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 1.75rem; padding: 12px 16px; background: #fff; border-radius: 12px; border: 1px solid var(--border); align-items: center; }
+    .legend-title { font-size: 12px; font-weight: 500; color: var(--text); }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+    .l-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+    .cat-block { margin-bottom: 1.25rem; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; background: #fff; }
+    .cat-header { padding: 13px 18px; background: var(--green-pale); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+    .cat-emoji { font-size: 16px; }
+    .cat-name  { font-size: 15px; font-weight: 500; color: var(--green-deep); }
+    .sub-grid  { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+    .sub-item  { padding: 9px 16px; font-size: 12px; color: var(--muted); border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); line-height: 1.4; }
+    .retailer-row   { padding: 10px 16px; background: var(--cream); border-top: 1px solid var(--border); }
+    .retailer-label { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--bark-light); margin-bottom: 6px; }
+    .retailer-tags  { display: flex; flex-wrap: wrap; gap: 5px; }
+    .r-tag  { font-size: 11px; padding: 3px 9px; border-radius: 10px; }
+    .r-gen  { background: #EAF3DE; color: #27500A; border: 1px solid #97C459; }
+    .r-spec { background: #E6F1FB; color: #0C447C; border: 1px solid #85B7EB; }
+    .r-comm { background: #FAEEDA; color: #633806; border: 1px solid #FAC775; }
+
+    .tier-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 2rem; }
+    .tier-card { border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; background: #fff; }
+    .tier-card.featured { border: 2px solid var(--green-mid); background: var(--green-pale); }
+    .tier-badge { display: inline-block; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 10px; border-radius: 10px; margin-bottom: 0.75rem; }
+    .tier-badge.bronze { background: #F5ECD7; color: #8B6914; }
+    .tier-badge.silver { background: #EBEBEB; color: #555; }
+    .tier-badge.gold   { background: #FFF3CC; color: #8B6200; }
+    .tier-name  { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 500; color: var(--green-deep); margin-bottom: 0.5rem; }
+    .tier-price { font-size: 13px; color: var(--muted); margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+    .tier-list  { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+    .tier-list li { font-size: 13px; font-weight: 300; color: var(--muted); padding-left: 16px; position: relative; }
+    .tier-list li::before { content: "✓"; position: absolute; left: 0; color: var(--green-mid); font-weight: 500; }
+
+    .contact-card { background: var(--green-deep); border-radius: 16px; padding: 2.5rem 2.75rem; display: flex; flex-wrap: wrap; gap: 2rem; justify-content: space-between; align-items: center; }
+    .contact-left h3 { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 500; color: #fff; margin-bottom: 0.5rem; }
+    .contact-left p  { font-size: 14px; font-weight: 300; color: rgba(255,255,255,0.55); max-width: 360px; line-height: 1.7; }
+    .contact-right { display: flex; flex-direction: column; gap: 10px; }
+    .contact-line  { display: flex; align-items: center; gap: 10px; }
+    .contact-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: var(--green-light); min-width: 60px; }
+    .contact-val   { font-size: 14px; color: rgba(255,255,255,0.8); }
+
+    .ftc-footer { background: #fff; border-top: 1px solid var(--border); padding: 1.75rem 4rem; text-align: center; }
+    .ftc-footer p { font-size: 11px; color: var(--bark-light); line-height: 1.7; max-width: 700px; margin: 0 auto; }
+  </style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-logo">
+    <div class="cover-badge">
+      <svg width="32" height="32" viewBox="0 0 44 44" fill="none">
+        <path d="M22 6C22 6 13 14 13 24c0 6 4 10 9 12 5-2 9-6 9-12 0-10-9-18-9-18Z" fill="#C0DD97"/>
+        <line x1="22" y1="36" x2="22" y2="42" stroke="#C0DD97" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M22 30c0 0-6-3-10-1" stroke="#C0DD97" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <path d="M22 34c0 0 5-3 9-1" stroke="#C0DD97" stroke-width="2" stroke-linecap="round" fill="none"/>
+      </svg>
+    </div>
+    <div>
+      <div class="cover-logo-name">Rootstock</div>
+      <div class="cover-logo-sub">AI-Powered Homesteading</div>
+    </div>
+  </div>
+  <div class="cover-body">
+    <p class="cover-eyebrow">Media Kit &amp; Partnership Overview — 2026</p>
+    <h1 class="cover-headline">Where the modern homesteader<br/><span>comes to learn.</span></h1>
+    <p class="cover-sub">Rootstock is an AI-powered homesteading platform delivering step-by-step project guides, curated tool lists, and expert knowledge to a high-intent, purchase-ready audience of self-sufficient Americans.</p>
+  </div>
+  <div class="cover-footer">
+    <div class="cover-footer-left">Prepared for Impact Affiliate Network<br/>© 2026 Rootstock. Confidential.</div>
+    <div class="cover-footer-right">rootstockapp.com<br/>partnerships@rootstockapp.com</div>
+  </div>
+</div>
+
+<div class="page">
+  <p class="section-eyebrow">Who we are</p>
+  <h2 class="section-title">Built from the ground up<br/>for the self-sufficient life.</h2>
+  <div class="divider"></div>
+  <p class="section-body">Rootstock is an AI-powered homesteading assistant that turns complex DIY questions into actionable, skill-level-appropriate project guides. Every response includes safety checklists, a master tool and materials list, numbered steps, pro tips, and one-click contractor referrals — making Rootstock the only platform a homesteader needs from idea to completion.<br/><br/>Our audience isn't browsing for inspiration. They're standing in their yard, at the hardware store, or in their kitchen — ready to buy and ready to build. That intent makes every product recommendation on Rootstock count.</p>
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-num">10</div><div class="stat-label">Content categories at launch</div></div>
+    <div class="stat-card"><div class="stat-num">70+</div><div class="stat-label">Subcategories mapped to retail verticals</div></div>
+    <div class="stat-card"><div class="stat-num">25+</div><div class="stat-label">Affiliate partner targets identified</div></div>
+    <div class="stat-card"><div class="stat-num">$0</div><div class="stat-label">Paid ads — pure organic &amp; affiliate</div></div>
+  </div>
+</div>
+
+<div class="page">
+  <p class="section-eyebrow">Our audience</p>
+  <h2 class="section-title">High-intent buyers who<br/>build, grow, and fix things.</h2>
+  <div class="divider"></div>
+  <p class="section-body">Rootstock users arrive with a project in mind and a credit card nearby. They're not reading for entertainment — they're looking for exactly what to buy and exactly how to use it. That purchase intent is what makes this audience exceptionally valuable for brands in home improvement, agriculture, food, energy, and tools.</p>
+  <div class="aud-grid">
+    <div class="aud-item"><div class="aud-item-label">Primary age range</div><div class="aud-item-val">28 – 55 years old</div></div>
+    <div class="aud-item"><div class="aud-item-label">Geographic focus</div><div class="aud-item-val">Rural &amp; suburban USA</div></div>
+    <div class="aud-item"><div class="aud-item-label">Primary interests</div><div class="aud-item-val">DIY, homesteading, self-sufficiency</div></div>
+    <div class="aud-item"><div class="aud-item-label">Purchase behavior</div><div class="aud-item-val">High-intent, project-driven buyers</div></div>
+    <div class="aud-item"><div class="aud-item-label">Household type</div><div class="aud-item-val">Homeowners, rural landowners</div></div>
+    <div class="aud-item"><div class="aud-item-label">Content interaction</div><div class="aud-item-val">Deep engagement, repeat usage</div></div>
+  </div>
+</div>
+
+<div class="page">
+  <p class="section-eyebrow">Why Rootstock</p>
+  <h2 class="section-title">Our unique value<br/>for brand partners.</h2>
+  <div class="divider"></div>
+  <div class="value-grid">
+    <div class="value-card"><div class="value-icon" style="background:#EAF3DE;">🎯</div><h4>Intent-first placement</h4><p>Product links appear inside step-by-step guides at the exact moment a user needs a specific tool or supply — not as banner ads, but as helpful recommendations.</p></div>
+    <div class="value-card"><div class="value-icon" style="background:#E6F1FB;">🧠</div><h4>AI-structured content</h4><p>Every guide follows a consistent format with a dedicated tool list section, meaning affiliate link placement is systematic, predictable, and high-visibility every time.</p></div>
+    <div class="value-card"><div class="value-icon" style="background:#FAEEDA;">🏡</div><h4>Niche authority</h4><p>Rootstock speaks directly to the homesteading and self-sufficiency niche — a passionate, underserved audience with strong brand loyalty and above-average cart values.</p></div>
+    <div class="value-card"><div class="value-icon" style="background:#FCEBEB;">📈</div><h4>Specialized retailer strategy</h4><p>We don't send every buyer to Amazon. Freeze dryer buyers go to Harvest Right. Solar buyers go to Renogy. This drives higher conversion rates and larger commissions per click.</p></div>
+    <div class="value-card"><div class="value-icon" style="background:#EEEDFE;">🔁</div><h4>Repeat engagement</h4><p>Homesteaders return project after project. Rootstock is designed for repeat use, meaning affiliate link impressions compound over a user's lifetime, not just one visit.</p></div>
+    <div class="value-card"><div class="value-icon" style="background:#E1F5EE;">✅</div><h4>FTC compliant from day one</h4><p>Rootstock includes clear affiliate disclosures on every page, demonstrating brand-safe, compliance-forward operations that networks and advertisers can trust.</p></div>
+  </div>
+</div>
+
+<div class="page">
+  <p class="section-eyebrow">Content coverage &amp; affiliate map</p>
+  <h2 class="section-title">Ten categories. Every subcategory<br/>mapped to the right retailer.</h2>
+  <div class="divider"></div>
+  <p class="section-body">Each category contains 6–8 subcategories that create natural, high-intent product recommendation moments. General and specialized retailers are matched to the subcategories where they convert best — driving higher commissions than broad-market platforms.</p>
+
+  <div class="legend-bar">
+    <span class="legend-title">Retailer type:</span>
+    <div class="legend-item"><span class="l-dot" style="background:#3B6D11;"></span>General retailer</div>
+    <div class="legend-item"><span class="l-dot" style="background:#185FA5;"></span>Specialized retailer</div>
+    <div class="legend-item"><span class="l-dot" style="background:#BA7517;"></span>High-commission opportunity</div>
+  </div>
+
+  <div class="cat-block">
+    <div class="cat-header"><span class="cat-emoji">🌿</span><span class="cat-name">Landscape &amp; gardening</span></div>
+    <div class="sub-grid"><div class="sub-item">Raised bed &amp; container gardens</div><div class="sub-item">Soil &amp; composting</div><div class="sub-item">Irrigation &amp; watering systems</div><div class="sub-item">Fruit trees &amp; food forests</div><div class="sub-item">Pest &amp; weed control</div><div class="sub-item">Greenhouse &amp; cold frames</div><div class="sub-item">Lawn care &amp; pasture</div><div class="sub-item">Seed saving &amp; propagation</div></div>
+    <div class="retailer-row"><div class="retailer-label">Affiliate partners</div><div class="retailer-tags"><span class="r-tag r-gen">Home Depot</span><span class="r-tag r-gen">Amazon</span><span class="r-tag r-gen">Tractor Supply Co.</span><span class="r-tag r-spec">Burpee Seeds</span><span class="r-tag r-spec">Johnny's Selected Seeds</span><span class="r-tag r-spec r-comm">Lehman's</span><span class="r-tag r-spec">Gardener's Supply Co.</span></div></div>
+  </div>
+
+  <div class="cat-block">
+    <div class="cat-header"><span class="cat-emoji">🍳</span><span class="cat-name">Cooking &amp; baking</span></div>
+    <div class="sub-grid"><div class="sub-item">Cast iron &amp; wood stove cooking</div><div class="sub-item">Bread &amp; sourdough baking</div><div class="sub-item">Fermentation &amp; cultures</div><div class="sub-item">Outdoor &amp; open-fire cooking</div><div class="sub-item">Dairy — butter, cheese, yogurt</div><div class="sub-item">Meal planning from scratch</div><div class="sub-item">Dehydrating &amp; drying food</div></div>
+    <div class="retailer-row"><div class="retailer-label">Affiliate partners</div><div class="retailer-tags"><span class="r-tag r-gen">Amazon</span><span class="r-tag r-gen">Tractor Supply Co.</span><span class="r-tag r-spec r-comm">Lehman's</span><span class="r-tag r-spec">Lodge Cast Iron</span><span class="r-tag r-spec">Cultures for Health</span><span class="r-tag r-spec">New England Cheesemaking</span></div></div>
+  </div>
+
+  <div class="cat-block">
+    <div class="cat-header"><span class="cat-emoji">🫙</span><span class="cat-name">Canning &amp; preservation</span></div>
+    <div class="sub-grid"><div class="sub-item">Water bath canning</div><div class="sub-item">Pressure canning</div><div class="sub-item">Pickling &amp; brining</div><div class="sub-item">Jams, jellies &amp; preserves</div><div class="sub-item">Freezing &amp; vacuum sealing</div><div class="sub-item">Root cellar &amp; cold storage</div><div class="sub-item">Smoking &amp; curing meats</div></div>
+    <div class="retailer-row"><div class="retailer-label">Affiliate partners</div><div class="retailer-tags"><span class="r-tag r-gen">Amazon</span><span class="r-tag r-gen">Tractor Supply Co.</span><span class="r-tag r-spec r-comm">Harvest Right Freeze Dryers</span><span class="r-tag r-spec r-comm">Lehman's</span><span class="r-tag r-spec">Ball / Kerr (FoodSaver)</span><span class="r-tag r-spec">Nesco / Cosori</span></div></div>
+  </div>
+
+  <div class="cat-block">
+    <div class="cat-header"><span class="cat-emoji">🔧</span><span class="cat-name">Auto &amp; small engine repair</span></div>
+    <div class="sub-grid"><div class="sub-item">Tractors &amp; farm equipment</div><div class="sub-item">ATVs &amp; UTVs</div><div class="sub-item">Generators &amp; engines</div><div class="sub-item">Chainsaws &amp; power tools</div><div class="sub-item">Lawn mowers &amp; tillers</div><div class="sub-item">Trucks &amp; trailers</div><div class="sub-item">Welding &amp; metalwork</div></div>
+    <div class="retailer-row"><div class="retailer-label">Affiliate partners</div><div class="retailer-tags"><span class="r-tag r-gen">Amazon</span><span class="r-tag r-gen">Tractor Supply Co.</span><span class="r-tag r-spec r-comm">Northern Tool + Equipment</span><span class="r-tag r-spec">AutoZone</span><span class="r-tag r-spec">Advance Auto Parts</span><span class="r-tag r-spec">NAPA Auto Parts</span><span class="r-tag r-spec">Messick's Farm Equipment</span><span class="r-tag r-spec">Stihl (authorized dealers)</span></div></div>
+  </div>
+
+  <div class="cat-block">
+    <div class="cat-header"><span class="cat-emoji">🚿</span><span class="cat-name">Plumbing</span></div>
+    <div class="sub-grid"><div class="sub-item">Well systems &amp; pumps</div><div class="sub-item">Pipe repair &amp; replacement</div><div class="sub-item">Water heater install &amp; repair</div><div class="sub-item">Irrigation &amp; outdoor lines</div><div class="sub-item">Septic &amp; greywater systems</div><div class="sub-item">Rainwater harvesting</div><div class="sub-item">Fixtures &amp; faucets</div></div>
+    <div class="retailer-row"><div class="retailer-label">Affiliate partners</div><div class="retailer-tags"><span class="r-tag r-gen">Home Depot</span><span class="r-tag r-gen">Amazon</span><span class="r-tag r-spec r-comm">Northern Tool + Equipment</span><span class="r-tag r-spec">Grainger</span><span class="r-tag r-spec">Pumps &amp; Systems (Xylem)</span></div></div>
+  </div>
+
+  <div class="cat-block">
+    <div class="cat-header"><span class="cat-emoji">⚡</span><span class="cat-name">Electrical</span></div>
+    <div class="sub-grid"><div class="sub-item">Panel upgrades &amp; breakers</div><div class="sub-item">Outlets, switches &amp; wiring</div><div class="sub-item">Generator hookups &amp; transfer switches</div><div class="sub-item">Outbuilding &amp; barn wiring</div><div class="sub-item">Low-voltage &amp; lighting</div><div class="sub-item">EV &amp; equipment charging</div></div>
+    <div class="retailer-row"><div class="retailer-label">Affiliate partners</div><div class="retailer-tags"><span class="r-tag r-gen">Home Depot</span><span class="r-tag r-gen">Amazon</span><span class="r-tag r-spec r-comm">Northern Tool + Equipment</span><span class="r-tag r-spec">Champion Power Equipment</span><span class="r-tag r-spec">Grainger</span></div></div>
+  </div>
+
+  <div class="cat-block">
+    <div class="cat-header"><span class="cat-emoji">☀️</span><span class="cat-name">Solar &amp; off-grid energy</span></div>
+    <div class="sub-grid"><div class="sub-item">Solar panel installation</div><div class="sub-item">Battery banks &amp; storage</div><div class="sub-item">Inverters &amp; charge controllers</div><div class="sub-item">Wind &amp; micro-hydro power</div><div class="sub-item">Off-grid cabin power systems</div><div class="sub-item">Propane &amp; backup fuel systems</div><div class="sub-item">Energy efficiency &amp; insulation</div></div>
+    <div class="retailer-row"><div class="retailer-label">Affiliate partners</div><div class="retailer-tags"><span class="r-tag r-gen">Home Depot</span><span class="r-tag r-gen">Amazon</span><span class="r-tag r-spec r-comm">Renogy Solar</span><span class="r-tag r-spec r-comm">EcoFlow</span><span class="r-tag r-spec r-comm">Bluetti Power</span><span class="r-tag r-spec">Goal Zero</span><span class="r-tag r-spec">Northern Tool + Equipment</span><span class="r-tag r-spec">Champion Power Equipment</span></div></div>
+  </div>
+
+  <div class="cat-block">
+    <div class="cat-header"><span class="cat-emoji">🐄</span><span class="cat-name">Animals &amp; livestock</span></div>
+    <div class="sub-grid"><div class="sub-item">Chickens &amp; poultry</div><div class="sub-item">Goats &amp; sheep</div><div class="sub-item">Cattle &amp; pigs</div><div class="sub-item">Rabbits &amp; small animals</div><div class="sub-item">Beekeeping</div><div class="sub-item">Fencing &amp; pasture management</div><div class="sub-item">Barn &amp; shelter building</div><div class="sub-item">Animal health &amp; first aid</div></div>
+    <div class="retailer-row"><div class="retailer-label">Affiliate partners</div><div class="retailer-tags"><span class="r-tag r-gen">Amazon</span><span class="r-tag r-gen">Tractor Supply Co.</span><span class="r-tag r-spec r-comm">Mann Lake Beekeeping</span><span class="r-tag r-spec r-comm">Dadant &amp; Sons Beekeeping</span><span class="r-tag r-spec">Jeffers Livestock</span><span class="r-tag r-spec">Valley Vet Supply</span><span class="r-tag r-spec">Premier 1 Supplies (fencing)</span><span class="r-tag r-spec">Hoegger Farm Yard (goats)</span></div></div>
+  </div>
+
+  <div class="cat-block">
+    <div class="cat-header"><span class="cat-emoji">🪵</span><span class="cat-name">Building &amp; renovation</span></div>
+    <div class="sub-grid"><div class="sub-item">Sheds &amp; outbuildings</div><div class="sub-item">Fencing &amp; gates</div><div class="sub-item">Decks &amp; porches</div><div class="sub-item">Roofing &amp; gutters</div><div class="sub-item">Framing &amp; foundations</div><div class="sub-item">Flooring &amp; interior finishes</div><div class="sub-item">Concrete &amp; masonry</div><div class="sub-item">Insulation &amp; weatherproofing</div></div>
+    <div class="retailer-row"><div class="retailer-label">Affiliate partners</div><div class="retailer-tags"><span class="r-tag r-gen">Home Depot</span><span class="r-tag r-gen">Amazon</span><span class="r-tag r-gen">Tractor Supply Co.</span><span class="r-tag r-spec r-comm">Northern Tool + Equipment</span><span class="r-tag r-spec">Acme Tools</span><span class="r-tag r-spec">Tool Nut</span><span class="r-tag r-spec">Rockler Woodworking</span><span class="r-tag r-spec">84 Lumber</span></div></div>
+  </div>
+
+  <div class="cat-block">
+    <div class="cat-header"><span class="cat-emoji">🌱</span><span class="cat-name">Other self-sufficiency</span></div>
+    <div class="sub-grid"><div class="sub-item">Herbal medicine &amp; first aid</div><div class="sub-item">Hunting &amp; fishing</div><div class="sub-item">Foraging &amp; wild edibles</div><div class="sub-item">Fiber arts — spinning &amp; weaving</div><div class="sub-item">Candle &amp; soap making</div><div class="sub-item">Water filtration &amp; storage</div><div class="sub-item">Emergency preparedness</div><div class="sub-item">Natural building materials</div></div>
+    <div class="retailer-row"><div class="retailer-label">Affiliate partners</div><div class="retailer-tags"><span class="r-tag r-gen">Amazon</span><span class="r-tag r-gen">Tractor Supply Co.</span><span class="r-tag r-spec r-comm">Bass Pro Shops / Cabela's</span><span class="r-tag r-spec">MidwayUSA</span><span class="r-tag r-spec">Berkey Water Filters</span><span class="r-tag r-spec r-comm">Lehman's</span><span class="r-tag r-spec">Mountain Rose Herbs</span></div></div>
+  </div>
+</div>
+
+<div class="page">
+  <p class="section-eyebrow">Partner with us</p>
+  <h2 class="section-title">Partnership opportunities<br/>built around your goals.</h2>
+  <div class="divider"></div>
+  <p class="section-body">Rootstock is currently building its founding partner network ahead of full public launch. Early partners receive preferred placement, custom category alignment, and direct collaboration on content strategy.</p>
+  <div class="tier-grid">
+    <div class="tier-card">
+      <span class="tier-badge bronze">Affiliate</span>
+      <div class="tier-name">Standard</div>
+      <div class="tier-price">Commission-based via Impact</div>
+      <ul class="tier-list"><li>Tool list link placement</li><li>Category-relevant guides</li><li>Impact dashboard tracking</li><li>FTC-compliant disclosure</li></ul>
+    </div>
+    <div class="tier-card featured">
+      <span class="tier-badge gold">⭐ Recommended</span>
+      <div class="tier-name">Featured Partner</div>
+      <div class="tier-price">Commission + preferred placement</div>
+      <ul class="tier-list"><li>Priority link placement</li><li>Category co-branding</li><li>Dedicated tool list section</li><li>Early access to new categories</li><li>Monthly performance reports</li></ul>
+    </div>
+    <div class="tier-card">
+      <span class="tier-badge silver">Enterprise</span>
+      <div class="tier-name">Brand Partner</div>
+      <div class="tier-price">Custom arrangement</div>
+      <ul class="tier-list"><li>Exclusive category sponsorship</li><li>Co-created content guides</li><li>Brand logo in partner section</li><li>Custom referral landing pages</li><li>Direct strategy sessions</li></ul>
+    </div>
+  </div>
+  <div class="contact-card">
+    <div class="contact-left">
+      <h3>Ready to partner?</h3>
+      <p>We're actively onboarding founding partners ahead of our public launch. Reach out to discuss placement, commission structure, and early access opportunities.</p>
+    </div>
+    <div class="contact-right">
+      <div class="contact-line"><span class="contact-label">Email</span><span class="contact-val">partnerships@rootstockapp.com</span></div>
+      <div class="contact-line"><span class="contact-label">Web</span><span class="contact-val">rootstockapp.com</span></div>
+      <div class="contact-line"><span class="contact-label">Network</span><span class="contact-val">Impact Affiliate</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="ftc-footer">
+  <p>© 2026 Rootstock. All rights reserved. This document is confidential and intended for potential brand and affiliate partners only.<br/>
+  <strong>Affiliate disclosure:</strong> As an affiliate, Rootstock may earn a commission from qualifying purchases made through links on our platform. This does not affect our editorial recommendations. All disclosures comply with FTC guidelines.</p>
+</div>
+
+</body>
+</html>

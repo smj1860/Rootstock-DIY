@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Project — Rootstock</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/rootstock.css">
+  <style>
+    body { background: var(--cream); min-height: 100vh; }
+
+    /* ── Nav ──────────────────────────────────────────────────────── */
+    .app-nav { position: sticky; top: 0; z-index: 100; background: white; border-bottom: 1px solid var(--border); }
+    .app-nav-inner { max-width: 900px; margin: 0 auto; padding: 0 var(--space-6); height: 56px; display: flex; align-items: center; gap: var(--space-6); }
+    .nav-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+    .nav-logo-mark { width: 30px; height: 30px; background: var(--green-deep); border-radius: 7px; display: flex; align-items: center; justify-content: center; }
+    .nav-logo-name { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 600; color: var(--green-deep); letter-spacing: -0.3px; }
+    .nav-back { font-size: 13.5px; color: var(--muted); text-decoration: none; display: flex; align-items: center; gap: 5px; margin-left: 4px; padding: 5px 8px; border-radius: 6px; transition: color 0.12s, background 0.12s; }
+    .nav-back:hover { color: var(--green-deep); background: var(--green-pale); text-decoration: none; }
+    .nav-right { margin-left: auto; display: flex; align-items: center; gap: var(--space-3); }
+    .nav-user-name { font-size: 13px; color: var(--muted); }
+
+    /* ── Shared page wrapper ──────────────────────────────────────── */
+    .page { max-width: 900px; margin: 0 auto; padding: 2.5rem var(--space-6) 5rem; }
+
+    /* ════════════════════════════════════════════════════════════════
+       FORM VIEW
+    ════════════════════════════════════════════════════════════════ */
+    .form-heading {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(22px, 3vw, 28px);
+      font-weight: 500;
+      color: var(--green-deep);
+      margin-bottom: 4px;
+    }
+    .form-sub { font-size: 14px; color: var(--muted); margin-bottom: 2rem; }
+
+    /* Category grid */
+    .cat-section-label {
+      font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: var(--space-3);
+    }
+    .cat-grid-form {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: var(--space-2);
+      margin-bottom: 1.75rem;
+    }
+    .cat-tile-form {
+      display: flex; flex-direction: column; align-items: center; gap: 5px;
+      padding: var(--space-3) var(--space-2);
+      background: white; border: 1.5px solid var(--border); border-radius: var(--radius-lg);
+      cursor: pointer; transition: border-color 0.12s, background 0.12s;
+      font-size: 12.5px; font-weight: 500; color: var(--muted);
+    }
+    .cat-tile-form:hover { border-color: var(--green-mid); color: var(--green-deep); }
+    .cat-tile-form.selected { border-color: var(--green-mid); background: var(--green-pale); color: var(--green-deep); }
+    .cat-tile-form .tile-icon { font-size: 22px; line-height: 1; }
+    .selected-cat-row {
+      display: flex; align-items: center; gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      background: var(--green-pale); border: 1.5px solid var(--green-mid);
+      border-radius: var(--radius-lg); margin-bottom: 1.75rem;
+    }
+    .selected-cat-icon { font-size: 22px; }
+    .selected-cat-name { font-size: 15px; font-weight: 500; color: var(--green-deep); flex: 1; }
+    .btn-change-cat { font-size: 12px; color: var(--green-mid); background: none; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; padding: 4px 8px; }
+    .btn-change-cat:hover { text-decoration: underline; }
+
+    /* Subcategory select */
+    .select-input {
+      width: 100%; font-family: 'DM Sans', sans-serif; font-size: 15px;
+      color: var(--text); background: white; border: 1px solid var(--border);
+      border-radius: var(--radius-md); padding: 11px 14px; outline: none;
+      appearance: none; cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b6b58' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 14px center;
+      padding-right: 36px;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .select-input:focus { border-color: var(--green-mid); box-shadow: 0 0 0 3px rgba(59,109,17,0.1); }
+
+    /* Textarea */
+    textarea.input {
+      resize: vertical; min-height: 100px; line-height: 1.6;
+      font-family: 'DM Sans', sans-serif; font-size: 15px;
+    }
+
+    /* Skill pills */
+    .pill-group { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+    .skill-pill { position: relative; }
+    .skill-pill input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+    .skill-pill label {
+      display: block; padding: 8px 18px; font-size: 13.5px; font-weight: 500;
+      background: white; border: 1.5px solid var(--border); border-radius: 100px;
+      cursor: pointer; color: var(--muted);
+      transition: border-color 0.12s, background 0.12s, color 0.12s;
+    }
+    .skill-pill label:hover { border-color: var(--green-mid); color: var(--green-deep); }
+    .skill-pill input:checked + label { border-color: var(--green-mid); background: var(--green-pale); color: var(--green-deep); }
+
+    /* MacGuyver toggle */
+    .macguyver-row {
+      display: flex; align-items: flex-start; gap: var(--space-4);
+      padding: var(--space-4); background: white; border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+    }
+    .macguyver-row.pro-only-locked { opacity: 0.5; pointer-events: none; background: var(--cream); }
+    .macguyver-info { flex: 1; }
+    .macguyver-title { font-size: 14px; font-weight: 500; color: var(--text); display: flex; align-items: center; gap: 6px; }
+    .macguyver-title .pro-chip {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.05em;
+      background: var(--green-deep); color: var(--green-light);
+      padding: 1px 6px; border-radius: 100px; text-transform: uppercase;
+    }
+    .macguyver-desc { font-size: 12.5px; color: var(--muted); margin-top: 3px; line-height: 1.5; }
+
+    /* Toggle switch */
+    .toggle-wrap { flex-shrink: 0; margin-top: 2px; }
+    .toggle { position: relative; display: inline-block; width: 40px; height: 22px; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+      position: absolute; inset: 0; cursor: pointer;
+      background: var(--border); border-radius: 22px;
+      transition: background 0.2s;
+    }
+    .toggle-slider::before {
+      content: ''; position: absolute;
+      width: 16px; height: 16px; border-radius: 50%;
+      background: white; left: 3px; bottom: 3px;
+      transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .toggle input:checked + .toggle-slider { background: var(--green-mid); }
+    .toggle input:checked + .toggle-slider::before { transform: translateX(18px); }
+
+    /* Form fieldset layout */
+    .field { margin-bottom: var(--space-5); }
+    .field label { display: block; font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 6px; }
+    .field-hint { font-size: 11.5px; color: var(--muted); margin-top: 5px; }
+
+    /* Submit */
+    .btn-generate {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 13px 28px; background: var(--green-mid); color: var(--green-pale);
+      border: none; border-radius: var(--radius-md); font-family: 'DM Sans', sans-serif;
+      font-size: 15px; font-weight: 600; cursor: pointer;
+      transition: background 0.12s, transform 0.1s;
+    }
+    .btn-generate:hover:not(:disabled) { background: var(--green-deep); }
+    .btn-generate:active { transform: scale(0.99); }
+    .btn-generate:disabled { opacity: 0.55; cursor: not-allowed; }
+    .btn-generate .spinner {
+      width: 17px; height: 17px; border: 2px solid rgba(192,221,151,0.35);
+      border-top-color: var(--green-light); border-radius: 50%;
+      animation: spin 0.65s linear infinite; display: none;
+    }
+    .btn-generate.loading .spinner { display: block; }
+    .btn-generate.loading .btn-label { display: none; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .form-alert { padding: 10px 14px; border-radius: 8px; font-size: 13.5px; margin-bottom: 1rem; display: none; line-height: 1.5; }
+    .form-alert.show { display: block; }
+    .form-alert.error   { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+    .form-alert.upgrade { background: var(--green-pale); color: var(--green-deep); border: 1px solid var(--green-light); }
+
+    /* ════════════════════════════════════════════════════════════════
+       LOADING VIEW
+    ════════════════════════════════════════════════════════════════ */
+    .loading-view {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; min-height: 60vh; text-align: center;
+      padding: 3rem var(--space-6);
+    }
+    .loading-leaf {
+      width: 56px; height: 56px; background: var(--green-deep);
+      border-radius: 14px; display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1.5rem;
+      animation: pulse 1.8s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.85; transform:scale(1.05); } }
+
+    .loading-heading {
+      font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 500;
+      color: var(--green-deep); margin-bottom: 0.5rem;
+    }
+    .loading-sub { font-size: 14px; color: var(--muted); margin-bottom: 2rem; }
+
+    .loading-steps { display: flex; flex-direction: column; gap: var(--space-3); max-width: 320px; }
+    .loading-step {
+      display: flex; align-items: center; gap: var(--space-3);
+      font-size: 13.5px; color: var(--muted); opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .loading-step.visible { opacity: 1; }
+    .loading-step.done    { color: var(--green-mid); }
+    .step-dot {
+      width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+      border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center;
+      font-size: 10px;
+    }
+    .loading-step.done .step-dot { background: var(--green-pale); border-color: var(--green-mid); }
+    .loading-step.active .step-dot { border-color: var(--green-mid); animation: spin 0.8s linear infinite; }
+
+    /* ════════════════════════════════════════════════════════════════
+       GUIDE VIEW
+    ════════════════════════════════════════════════════════════════ */
+
+    /* Header */
+    .guide-header { margin-bottom: 2rem; }
+    .guide-meta-row {
+      display: flex; align-items: center; gap: var(--space-3);
+      flex-wrap: wrap; margin-bottom: var(--space-4);
+    }
+    .meta-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 12px; font-weight: 500; padding: 4px 10px; border-radius: 100px;
+    }
+    .meta-cat   { background: var(--green-pale); color: var(--green-mid); }
+    .meta-diff  { background: #fef9eb; color: #92680b; }
+    .meta-diff.beginner  { background: #f0fdf4; color: #15803d; }
+    .meta-diff.advanced  { background: #fef2f2; color: #991b1b; }
+    .meta-time  { background: #eff6ff; color: #1d4ed8; }
+
+    .guide-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(24px, 4vw, 34px); font-weight: 600;
+      color: var(--green-deep); line-height: 1.2; margin-bottom: var(--space-4);
+    }
+    .guide-overview {
+      font-size: 16px; color: var(--muted); line-height: 1.75;
+      border-left: 3px solid var(--green-light); padding-left: var(--space-4);
+    }
+
+    /* Feedback row */
+    .feedback-row {
+      display: flex; align-items: center; gap: var(--space-3);
+      padding: var(--space-3) var(--space-4); background: white;
+      border: 1px solid var(--border); border-radius: var(--radius-lg);
+      margin-bottom: 2rem; flex-wrap: wrap;
+    }
+    .feedback-label { font-size: 13px; color: var(--muted); flex: 1; }
+    .btn-feedback {
+      display: flex; align-items: center; gap: 5px;
+      padding: 6px 14px; border: 1.5px solid var(--border); border-radius: 7px;
+      background: white; cursor: pointer; font-family: 'DM Sans', sans-serif;
+      font-size: 13px; color: var(--muted); transition: all 0.12s;
+    }
+    .btn-feedback:hover { border-color: var(--green-mid); color: var(--green-mid); background: var(--green-pale); }
+    .btn-feedback.active-up   { background: #f0fdf4; border-color: #16a34a; color: #15803d; }
+    .btn-feedback.active-down { background: #fef2f2; border-color: #ef4444; color: #991b1b; }
+
+    /* Guide sections */
+    .guide-section { margin-bottom: 2.5rem; }
+    .guide-section-heading {
+      display: flex; align-items: center; gap: var(--space-3);
+      font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--green-mid);
+      margin-bottom: var(--space-4);
+      padding-bottom: var(--space-3); border-bottom: 1px solid var(--border);
+    }
+
+    /* Safety checklist */
+    .safety-box {
+      background: #fff8f1; border: 1.5px solid #f59e0b;
+      border-radius: var(--radius-lg); padding: var(--space-5);
+    }
+    .safety-heading {
+      display: flex; align-items: center; gap: var(--space-2);
+      font-size: 13px; font-weight: 600; color: #92400e;
+      text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: var(--space-4);
+    }
+    .safety-list { list-style: none; display: flex; flex-direction: column; gap: var(--space-3); }
+    .safety-item {
+      display: flex; align-items: flex-start; gap: var(--space-3);
+      font-size: 14px; color: #78350f; line-height: 1.5;
+    }
+    .safety-dot { width: 7px; height: 7px; border-radius: 50%; background: #f59e0b; flex-shrink: 0; margin-top: 7px; }
+
+    /* Tools & materials */
+    .tools-list { display: flex; flex-direction: column; gap: var(--space-2); }
+    .tool-item {
+      display: grid; grid-template-columns: 1fr auto;
+      gap: var(--space-3); align-items: start;
+      background: white; border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: var(--space-4) var(--space-5);
+    }
+    .tool-name  { font-size: 14px; font-weight: 500; color: var(--text); }
+    .tool-qty   { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .tool-purpose { font-size: 13px; color: var(--muted); margin-top: 3px; line-height: 1.45; }
+    .tool-cost  { font-size: 13px; font-weight: 500; color: var(--green-mid); white-space: nowrap; }
+    .tool-affiliate {
+      display: inline-flex; align-items: center; gap: 4px;
+      margin-top: 6px; font-size: 12px; font-weight: 500;
+      color: var(--green-mid); text-decoration: none;
+    }
+    .tool-affiliate:hover { color: var(--green-deep); text-decoration: underline; }
+    .tool-affiliate-partner { color: var(--muted); font-weight: 400; }
+    .tool-ftc { font-size: 10.5px; color: var(--muted); margin-top: var(--space-2); text-align: right; }
+
+    /* Steps */
+    .steps-list { display: flex; flex-direction: column; gap: var(--space-4); }
+    .step-card {
+      background: white; border: 1px solid var(--border); border-radius: var(--radius-xl); overflow: hidden;
+    }
+    .step-header {
+      display: flex; align-items: flex-start; gap: var(--space-4);
+      padding: var(--space-5); border-bottom: 1px solid var(--border);
+      cursor: pointer; user-select: none;
+    }
+    .step-num-badge {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--green-deep); color: var(--green-light);
+      font-size: 12px; font-weight: 600; display: flex; align-items: center;
+      justify-content: center; flex-shrink: 0; margin-top: 1px;
+    }
+    .step-title-block { flex: 1; }
+    .step-title { font-size: 15px; font-weight: 600; color: var(--text); line-height: 1.35; }
+    .step-collapse-icon {
+      color: var(--muted); font-size: 13px; flex-shrink: 0;
+      transition: transform 0.2s; padding-top: 4px;
+    }
+    .step-card.open .step-collapse-icon { transform: rotate(180deg); }
+    .step-body { padding: var(--space-5); display: none; }
+    .step-card.open .step-body { display: block; }
+    .step-instructions { font-size: 14.5px; color: var(--text); line-height: 1.75; margin-bottom: var(--space-4); }
+
+    .step-tip {
+      display: flex; align-items: flex-start; gap: var(--space-3);
+      background: var(--green-pale); border-left: 3px solid var(--green-mid);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      padding: var(--space-3) var(--space-4); margin-bottom: var(--space-3);
+    }
+    .step-tip-label { font-size: 11px; font-weight: 600; color: var(--green-mid); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 3px; }
+    .step-tip-text  { font-size: 13.5px; color: var(--green-deep); line-height: 1.5; }
+
+    .step-warning {
+      display: flex; align-items: flex-start; gap: var(--space-3);
+      background: #fff8f1; border-left: 3px solid #f59e0b;
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      padding: var(--space-3) var(--space-4); margin-bottom: var(--space-3);
+    }
+    .step-warning-label { font-size: 11px; font-weight: 600; color: #92400e; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 3px; }
+    .step-warning-text  { font-size: 13.5px; color: #78350f; line-height: 1.5; }
+
+    /* MacGuyver substitutions */
+    .macguyver-box {
+      background: var(--green-deep); border-radius: var(--radius-xl); padding: var(--space-5);
+    }
+    .macguyver-box-heading {
+      display: flex; align-items: center; gap: var(--space-2);
+      font-size: 12px; font-weight: 600; color: var(--green-light);
+      text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: var(--space-4);
+    }
+    .macguyver-items { display: flex; flex-direction: column; gap: var(--space-3); }
+    .macguyver-item {
+      background: rgba(255,255,255,0.07); border-radius: var(--radius-lg);
+      padding: var(--space-4);
+    }
+    .macguyver-arrow { font-size: 13px; color: var(--green-light); margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+    .macguyver-standard { font-size: 12.5px; color: rgba(192,221,151,0.65); text-decoration: line-through; }
+    .macguyver-sub-name { font-size: 14px; font-weight: 500; color: white; }
+    .macguyver-notes { font-size: 13px; color: rgba(192,221,151,0.8); margin-top: 4px; line-height: 1.5; }
+
+    /* Pro note / when-to-call / regional */
+    .pro-box {
+      background: white; border: 1px solid var(--border); border-radius: var(--radius-xl);
+      padding: var(--space-5);
+    }
+    .pro-box p { font-size: 14.5px; color: var(--text); line-height: 1.75; }
+
+    /* Next steps */
+    .next-steps-list { display: flex; flex-direction: column; gap: var(--space-2); }
+    .next-step-item {
+      display: flex; align-items: flex-start; gap: var(--space-3);
+      background: white; border: 1px solid var(--border); border-radius: var(--radius-lg);
+      padding: var(--space-3) var(--space-4);
+      font-size: 14px; color: var(--text); line-height: 1.5;
+    }
+    .next-step-arrow { color: var(--green-mid); flex-shrink: 0; }
+
+    /* Bottom CTA bar */
+    .guide-cta-bar {
+      display: flex; align-items: center; gap: var(--space-3);
+      flex-wrap: wrap; padding: var(--space-5) var(--space-5);
+      background: white; border: 1px solid var(--border);
+      border-radius: var(--radius-xl); margin-top: 2rem;
+    }
+    .btn-cta {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 10px 18px; border-radius: var(--radius-md);
+      font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+      cursor: pointer; border: none; text-decoration: none; transition: all 0.12s;
+    }
+    .btn-cta-primary { background: var(--green-mid); color: var(--green-pale); }
+    .btn-cta-primary:hover { background: var(--green-deep); text-decoration: none; }
+    .btn-cta-outline { background: white; color: var(--green-deep); border: 1.5px solid var(--border); }
+    .btn-cta-outline:hover { border-color: var(--green-mid); background: var(--green-pale); text-decoration: none; }
+    .btn-cta-pro { background: var(--green-deep); color: var(--green-light); }
+    .btn-cta-pro:hover { background: #142a08; text-decoration: none; }
+
+    /* Contractors section */
+    .contractors-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: var(--space-3); margin-top: var(--space-4); }
+    .contractor-card { background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-4); }
+    .contractor-name { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+    .contractor-rating { font-size: 12.5px; color: #b45309; }
+    .contractor-addr { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .contractor-links { display: flex; gap: var(--space-3); margin-top: var(--space-3); }
+    .contractor-link { font-size: 12px; color: var(--green-mid); text-decoration: none; }
+    .contractor-link:hover { text-decoration: underline; }
+
+    @media (max-width: 640px) {
+      .tool-item { grid-template-columns: 1fr; }
+      .guide-cta-bar { flex-direction: column; align-items: stretch; }
+      .btn-cta { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Navigation ─────────────────────────────────────────────────── -->
+<nav class="app-nav">
+  <div class="app-nav-inner">
+    <a href="/app/" class="nav-logo">
+      <div class="nav-logo-mark">
+        <svg width="18" height="18" viewBox="0 0 22 22" fill="none">
+          <path d="M11 3C11 3 7 7 7 12C7 15 9 17 11 18C13 17 15 15 15 12C15 7 11 3 11 3Z" fill="#C0DD97"/>
+          <path d="M11 18L11 21" stroke="#C0DD97" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M11 15C8 13 6 14 6 14" stroke="#C0DD97" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="M11 17C13.5 15 15.5 16 15.5 16" stroke="#C0DD97" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="nav-logo-name">Rootstock</span>
+    </a>
+    <a href="/app/" class="nav-back" id="nav-back">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Dashboard
+    </a>
+    <div class="nav-right">
+      <span class="nav-user-name" id="nav-user-name"></span>
+    </div>
+  </div>
+</nav>
+
+<!-- ════════════════════════════════════════════════════════════════
+     FORM VIEW
+════════════════════════════════════════════════════════════════ -->
+<div id="form-view" class="page" style="display:none;">
+  <h1 class="form-heading">New Project Guide</h1>
+  <p class="form-sub">Tell Rootstock what you're building. You'll get a complete, step-by-step guide in seconds.</p>
+
+  <div id="form-alert" class="form-alert"></div>
+
+  <!-- Category selection -->
+  <div id="cat-selection">
+    <p class="cat-section-label">Choose a category</p>
+    <div class="cat-grid-form" id="cat-grid-form"></div>
+  </div>
+
+  <!-- Selected category display -->
+  <div id="cat-selected-row" style="display:none;"></div>
+
+  <form id="project-form" novalidate>
+    <!-- Subcategory (shown after category selected) -->
+    <div class="field" id="subcat-field" style="display:none;">
+      <label for="subcategory">Subcategory <span style="font-weight:400;color:var(--muted);">(optional)</span></label>
+      <select class="select-input" id="subcategory" name="subcategory">
+        <option value="">— Any subcategory —</option>
+      </select>
+    </div>
+
+    <!-- Project description -->
+    <div class="field">
+      <label for="question">Describe your project <span style="color:#ef4444;">*</span></label>
+      <textarea class="input" id="question" name="question" rows="3"
+        placeholder="e.g. I want to install a 400-watt solar panel system on my off-grid cabin to power lighting and a small refrigerator."></textarea>
+      <p class="field-hint">Be specific — the more detail you give, the better the guide.</p>
+    </div>
+
+    <!-- Skill level -->
+    <div class="field">
+      <label>Your skill level</label>
+      <div class="pill-group">
+        <div class="skill-pill"><input type="radio" name="skill_level" id="s-beginner" value="beginner"><label for="s-beginner">🌱 Beginner</label></div>
+        <div class="skill-pill"><input type="radio" name="skill_level" id="s-intermediate" value="intermediate" checked><label for="s-intermediate">🔨 Intermediate</label></div>
+        <div class="skill-pill"><input type="radio" name="skill_level" id="s-advanced" value="advanced"><label for="s-advanced">⚡ Advanced</label></div>
+      </div>
+    </div>
+
+    <!-- Zip code -->
+    <div class="field">
+      <label for="zip_code">Your zip code <span style="font-weight:400;color:var(--muted);">(optional — for regional tips)</span></label>
+      <input type="text" class="input" id="zip_code" name="zip_code" placeholder="e.g. 35661" maxlength="10" style="max-width:180px;">
+    </div>
+
+    <!-- MacGuyver mode -->
+    <div class="field">
+      <div class="macguyver-row" id="macguyver-row">
+        <div class="macguyver-info">
+          <div class="macguyver-title">
+            🔧 MacGuyver Mode
+            <span class="pro-chip">Pro</span>
+          </div>
+          <p class="macguyver-desc">Use tools and supplies from your inventory as substitutes. Rootstock will creatively adapt the guide to what you already have.</p>
+        </div>
+        <div class="toggle-wrap">
+          <label class="toggle">
+            <input type="checkbox" id="macguyver_mode" name="macguyver_mode">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <button type="submit" class="btn-generate" id="generate-btn" disabled>
+        <span class="btn-label">Generate guide</span>
+        <span class="spinner"></span>
+      </button>
+      <p class="field-hint" style="margin-top:8px;">Usually takes 10–20 seconds.</p>
+    </div>
+  </form>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════
+     LOADING VIEW
+════════════════════════════════════════════════════════════════ -->
+<div id="loading-view" class="loading-view" style="display:none;">
+  <div class="loading-leaf">
+    <svg width="28" height="28" viewBox="0 0 22 22" fill="none">
+      <path d="M11 3C11 3 7 7 7 12C7 15 9 17 11 18C13 17 15 15 15 12C15 7 11 3 11 3Z" fill="#C0DD97"/>
+      <path d="M11 18L11 21" stroke="#C0DD97" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M11 15C8 13 6 14 6 14" stroke="#C0DD97" stroke-width="1.2" stroke-linecap="round"/>
+      <path d="M11 17C13.5 15 15.5 16 15.5 16" stroke="#C0DD97" stroke-width="1.2" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <h2 class="loading-heading">Building your guide…</h2>
+  <p class="loading-sub">Rootstock is pulling from years of hands-on expertise.</p>
+  <div class="loading-steps" id="loading-steps">
+    <div class="loading-step" data-step="0"><div class="step-dot"></div><span>Reviewing your project</span></div>
+    <div class="loading-step" data-step="1"><div class="step-dot"></div><span>Identifying safety requirements</span></div>
+    <div class="loading-step" data-step="2"><div class="step-dot"></div><span>Sourcing tools and materials</span></div>
+    <div class="loading-step" data-step="3"><div class="step-dot"></div><span>Writing step-by-step instructions</span></div>
+    <div class="loading-step" data-step="4"><div class="step-dot"></div><span>Adding expert tips and warnings</span></div>
+    <div class="loading-step" data-step="5"><div class="step-dot"></div><span>Finalizing your guide</span></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════
+     GUIDE VIEW
+════════════════════════════════════════════════════════════════ -->
+<div id="guide-view" class="page" style="display:none;">
+  <!-- Rendered by renderGuide() -->
+</div>
+
+<script type="module">
+import { requireAuth, getProfile, supabase } from '/js/auth.js'
+
+// ── Reference data ────────────────────────────────────────────────
+const CATEGORIES = [
+  { id: 'landscape',        label: 'Landscape & Gardening',     icon: '🌿' },
+  { id: 'cooking',          label: 'Cooking & Baking',           icon: '🍳' },
+  { id: 'canning',          label: 'Canning & Preservation',     icon: '🫙' },
+  { id: 'auto',             label: 'Auto & Small Engine',        icon: '🔧' },
+  { id: 'plumbing',         label: 'Plumbing',                   icon: '🚿' },
+  { id: 'electrical',       label: 'Electrical',                 icon: '⚡' },
+  { id: 'solar',            label: 'Solar & Off-Grid',           icon: '☀️' },
+  { id: 'animals',          label: 'Animals & Livestock',        icon: '🐄' },
+  { id: 'building',         label: 'Building & Renovation',      icon: '🪵' },
+  { id: 'self-sufficiency', label: 'Other Self-Sufficiency',     icon: '🌱' },
+]
+const CAT_MAP = Object.fromEntries(CATEGORIES.map(c => [c.id, c]))
+
+const SUBCATEGORIES = {
+  landscape:  [['landscape-raised-beds','Raised bed & container gardens'],['landscape-soil-composting','Soil & composting'],['landscape-irrigation','Irrigation & watering systems'],['landscape-fruit-trees','Fruit trees & food forests'],['landscape-pest-control','Pest & weed control'],['landscape-greenhouse','Greenhouse & cold frames'],['landscape-lawn-pasture','Lawn care & pasture'],['landscape-seed-saving','Seed saving & propagation']],
+  cooking:    [['cooking-cast-iron','Cast iron & wood stove cooking'],['cooking-bread-sourdough','Bread & sourdough baking'],['cooking-fermentation','Fermentation & cultures'],['cooking-outdoor-fire','Outdoor & open-fire cooking'],['cooking-dairy','Dairy — butter, cheese, yogurt'],['cooking-meal-planning','Meal planning from scratch'],['cooking-dehydrating','Dehydrating & drying food']],
+  canning:    [['canning-water-bath','Water bath canning'],['canning-pressure','Pressure canning'],['canning-pickling','Pickling & brining'],['canning-jams-jellies','Jams, jellies & preserves'],['canning-freezing','Freezing & vacuum sealing'],['canning-root-cellar','Root cellar & cold storage'],['canning-smoking-curing','Smoking & curing meats']],
+  auto:       [['auto-tractors','Tractors & farm equipment'],['auto-atvs-utvs','ATVs & UTVs'],['auto-generators','Generators & engines'],['auto-chainsaws-power-tools','Chainsaws & power tools'],['auto-mowers-tillers','Lawn mowers & tillers'],['auto-trucks-trailers','Trucks & trailers'],['auto-welding-metalwork','Welding & metalwork']],
+  plumbing:   [['plumbing-well-systems','Well systems & pumps'],['plumbing-pipe-repair','Pipe repair & replacement'],['plumbing-water-heater','Water heater install & repair'],['plumbing-irrigation','Irrigation & outdoor lines'],['plumbing-septic','Septic & greywater systems'],['plumbing-rainwater','Rainwater harvesting'],['plumbing-fixtures','Fixtures & faucets']],
+  electrical: [['electrical-panel','Panel upgrades & breakers'],['electrical-outlets-wiring','Outlets, switches & wiring'],['electrical-generator-hookup','Generator hookups & transfer switches'],['electrical-barn-wiring','Outbuilding & barn wiring'],['electrical-low-voltage','Low-voltage & lighting'],['electrical-ev-charging','EV & equipment charging']],
+  solar:      [['solar-panel-installation','Solar panel installation'],['solar-battery-banks','Battery banks & storage'],['solar-inverters','Inverters & charge controllers'],['solar-wind-hydro','Wind & micro-hydro power'],['solar-off-grid-cabin','Off-grid cabin power systems'],['solar-propane-backup','Propane & backup fuel systems'],['solar-efficiency-insulation','Energy efficiency & insulation']],
+  animals:    [['animals-chickens','Chickens & poultry'],['animals-goats-sheep','Goats & sheep'],['animals-cattle-pigs','Cattle & pigs'],['animals-rabbits-small','Rabbits & small animals'],['animals-beekeeping','Beekeeping'],['animals-fencing-pasture','Fencing & pasture management'],['animals-barn-shelter','Barn & shelter building'],['animals-health-first-aid','Animal health & first aid']],
+  building:   [['building-sheds','Sheds & outbuildings'],['building-fencing-gates','Fencing & gates'],['building-decks-porches','Decks & porches'],['building-roofing-gutters','Roofing & gutters'],['building-framing-foundations','Framing & foundations'],['building-flooring-finishes','Flooring & interior finishes'],['building-concrete-masonry','Concrete & masonry'],['building-insulation','Insulation & weatherproofing']],
+  'self-sufficiency': [['self-herbal-medicine','Herbal medicine & first aid'],['self-hunting-fishing','Hunting & fishing'],['self-foraging','Foraging & wild edibles'],['self-fiber-arts','Fiber arts — spinning & weaving'],['self-candle-soap','Candle & soap making'],['self-water-filtration','Water filtration & storage'],['self-emergency-prep','Emergency preparedness'],['self-natural-building','Natural building materials']],
+}
+
+// ── Helpers ───────────────────────────────────────────────────────
+function esc(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+}
+function show(id) { document.getElementById(id).style.display = 'block' }
+function hide(id) { document.getElementById(id).style.display = 'none'  }
+
+// ── State ─────────────────────────────────────────────────────────
+let selectedCategory = null
+let currentProjectId = null
+let currentGuide     = null
+let userProfile      = null
+
+// ── Boot ──────────────────────────────────────────────────────────
+async function init() {
+  const session = await requireAuth()
+  if (!session) return
+
+  userProfile = await getProfile()
+  const email = session.user.email
+  document.getElementById('nav-user-name').textContent =
+    userProfile?.display_name || email?.split('@')[0] || ''
+
+  const params      = new URLSearchParams(window.location.search)
+  const projectId   = params.get('id')
+  const categoryParam = params.get('category')
+
+  if (projectId) {
+    // Load existing guide
+    showLoadingView()
+    await loadExistingGuide(projectId, session)
+  } else {
+    // Show new-project form
+    setupForm(categoryParam, userProfile)
+    show('form-view')
+  }
+}
+
+// ── Form setup ────────────────────────────────────────────────────
+function setupForm(preselectedCategory, profile) {
+  // Lock MacGuyver for free tier
+  if (profile?.subscription_tier !== 'pro') {
+    document.getElementById('macguyver-row').classList.add('pro-only-locked')
+    document.getElementById('macguyver_mode').disabled = true
+  }
+
+  // Pre-fill skill level from profile
+  if (profile?.skill_level) {
+    const radio = document.querySelector(`input[name="skill_level"][value="${profile.skill_level}"]`)
+    if (radio) radio.checked = true
+  }
+
+  // Pre-fill zip code from profile
+  if (profile?.zip_code) {
+    document.getElementById('zip_code').value = profile.zip_code
+  }
+
+  // Build category grid
+  document.getElementById('cat-grid-form').innerHTML = CATEGORIES.map(c => `
+    <div class="cat-tile-form${preselectedCategory === c.id ? ' selected' : ''}"
+         data-cat="${esc(c.id)}" role="button" tabindex="0">
+      <span class="tile-icon">${c.icon}</span>
+      ${esc(c.label)}
+    </div>`
+  ).join('')
+
+  // Category tile click
+  document.getElementById('cat-grid-form').addEventListener('click', e => {
+    const tile = e.target.closest('.cat-tile-form')
+    if (!tile) return
+    selectCategory(tile.dataset.cat)
+  })
+
+  // Form submit
+  document.getElementById('project-form').addEventListener('submit', onFormSubmit)
+
+  // Pre-select if param given
+  if (preselectedCategory && CAT_MAP[preselectedCategory]) {
+    selectCategory(preselectedCategory)
+  }
+}
+
+function selectCategory(catId) {
+  if (!CAT_MAP[catId]) return
+  selectedCategory = catId
+  const cat = CAT_MAP[catId]
+
+  // Highlight tile
+  document.querySelectorAll('.cat-tile-form').forEach(t =>
+    t.classList.toggle('selected', t.dataset.cat === catId))
+
+  // Show selected row, hide grid
+  hide('cat-selection')
+  document.getElementById('cat-selected-row').innerHTML = `
+    <div class="selected-cat-row">
+      <span class="selected-cat-icon">${cat.icon}</span>
+      <span class="selected-cat-name">${esc(cat.label)}</span>
+      <button type="button" class="btn-change-cat" id="change-cat-btn">Change</button>
+    </div>`
+  show('cat-selected-row')
+
+  document.getElementById('change-cat-btn').addEventListener('click', () => {
+    hide('cat-selected-row')
+    show('cat-selection')
+    selectedCategory = null
+    document.getElementById('generate-btn').disabled = true
+  })
+
+  // Populate subcategory dropdown
+  const subcats = SUBCATEGORIES[catId] || []
+  const sel     = document.getElementById('subcategory')
+  sel.innerHTML = '<option value="">— Any subcategory —</option>'
+    + subcats.map(([id, label]) => `<option value="${esc(id)}">${esc(label)}</option>`).join('')
+  show('subcat-field')
+
+  // Enable generate button
+  document.getElementById('generate-btn').disabled = false
+}
+
+// ── Loading animation ─────────────────────────────────────────────
+function showLoadingView() {
+  hide('form-view'); hide('guide-view')
+  show('loading-view')
+
+  const steps  = document.querySelectorAll('.loading-step')
+  const delays = [0, 2200, 4500, 7000, 10500, 14000]
+
+  steps.forEach((step, i) => {
+    setTimeout(() => {
+      if (i > 0) {
+        steps[i - 1].classList.remove('active')
+        steps[i - 1].classList.add('done')
+        steps[i - 1].querySelector('.step-dot').textContent = '✓'
+      }
+      step.classList.add('visible', 'active')
+    }, delays[i])
+  })
+}
+
+// ── Form submit → generate ────────────────────────────────────────
+async function onFormSubmit(e) {
+  e.preventDefault()
+
+  const alertEl = document.getElementById('form-alert')
+  alertEl.className = 'form-alert'
+
+  if (!selectedCategory) {
+    alertEl.textContent = 'Please select a category first.'
+    alertEl.className = 'form-alert show error'
+    return
+  }
+
+  const question = document.getElementById('question').value.trim()
+  if (!question) {
+    alertEl.textContent = 'Please describe your project.'
+    alertEl.className = 'form-alert show error'
+    document.getElementById('question').focus()
+    return
+  }
+
+  const payload = {
+    question,
+    category:      selectedCategory,
+    subcategory:   document.getElementById('subcategory').value || null,
+    skill_level:   document.querySelector('input[name="skill_level"]:checked')?.value || 'intermediate',
+    zip_code:      document.getElementById('zip_code').value.trim() || null,
+    macguyver_mode: document.getElementById('macguyver_mode').checked,
+  }
+
+  // Start loading animation
+  showLoadingView()
+
+  const btn = document.getElementById('generate-btn')
+  btn.classList.add('loading')
+  btn.disabled = true
+
+  try {
+    const client = await supabase()
+    const { data: { session } } = await client.auth.getSession()
+
+    const res = await fetch('/api/generate-guide', {
+      method:  'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'Authorization': `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify(payload),
+    })
+
+    const data = await res.json()
+
+    if (!res.ok) {
+      // Handle tier limit
+      if (res.status === 403 && data.upgrade_url) {
+        hide('loading-view')
+        show('form-view')
+        alertEl.innerHTML = `${esc(data.message)} <a href="${esc(data.upgrade_url)}" style="color:var(--green-mid);font-weight:500;">Upgrade to Pro →</a>`
+        alertEl.className = 'form-alert show upgrade'
+        btn.classList.remove('loading'); btn.disabled = false
+        return
+      }
+      throw new Error(data.error || 'Guide generation failed')
+    }
+
+    currentGuide     = data.guide
+    currentProjectId = data.project_id
+
+    // Update URL without reload so back works
+    if (data.project_id) {
+      history.replaceState({}, '', `/app/project.html?id=${data.project_id}`)
+    }
+
+    renderGuide(data.guide, payload, userProfile)
+
+  } catch (err) {
+    console.error(err)
+    hide('loading-view')
+    show('form-view')
+    alertEl.textContent = err.message || 'Something went wrong. Please try again.'
+    alertEl.className = 'form-alert show error'
+    btn.classList.remove('loading'); btn.disabled = false
+  }
+}
+
+// ── Load existing guide from DB ───────────────────────────────────
+async function loadExistingGuide(projectId, session) {
+  try {
+    const client = await supabase()
+    const { data, error } = await client
+      .from('projects')
+      .select('*, guide_outputs(guide_json)')
+      .eq('id', projectId)
+      .eq('user_id', session.user.id)
+      .single()
+
+    if (error || !data?.guide_outputs?.[0]) {
+      throw new Error('Guide not found.')
+    }
+
+    currentGuide     = data.guide_outputs[0].guide_json
+    currentProjectId = data.id
+
+    const fakePayload = {
+      category:   data.category,
+      skill_level: data.skill_level,
+    }
+
+    renderGuide(currentGuide, fakePayload, userProfile)
+
+  } catch (err) {
+    hide('loading-view')
+    document.getElementById('guide-view').innerHTML = `
+      <div style="padding:4rem 2rem;text-align:center;color:var(--muted);font-size:14px;">
+        ${esc(err.message)}
+        <br><a href="/app/" style="color:var(--green-mid);margin-top:8px;display:inline-block;">← Back to dashboard</a>
+      </div>`
+    show('guide-view')
+  }
+}
+
+// ── Render guide ──────────────────────────────────────────────────
+function renderGuide(guide, payload, profile) {
+  hide('loading-view')
+  hide('form-view')
+
+  const cat    = CAT_MAP[payload.category] ?? { label: payload.category, icon: '📋' }
+  const isPro  = profile?.subscription_tier === 'pro'
+  const diff   = (guide.difficulty || 'intermediate').toLowerCase()
+  const diffClass = diff === 'beginner' ? 'beginner' : diff === 'advanced' ? 'advanced' : ''
+
+  // Safety checklist
+  const safetyItems = (guide.safety_checklist || []).map(item => `
+    <li class="safety-item"><span class="safety-dot"></span>${esc(item)}</li>`).join('')
+
+  // Tools & materials
+  const toolItems = (guide.tools_and_materials || []).map(t => `
+    <div class="tool-item">
+      <div>
+        <div class="tool-name">${esc(t.item)}</div>
+        ${t.quantity ? `<div class="tool-qty">Qty: ${esc(t.quantity)}</div>` : ''}
+        ${t.purpose  ? `<div class="tool-purpose">${esc(t.purpose)}</div>` : ''}
+        ${t.affiliate_url ? `
+        <a class="tool-affiliate" href="${esc(t.affiliate_url)}" target="_blank" rel="noopener noreferrer sponsored">
+          Shop
+          <span class="tool-affiliate-partner">at ${esc(t.affiliate_partner || 'Amazon')}</span>
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="opacity:0.55;"><path d="M2 8L8 2M8 2H4M8 2v4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>` : ''}
+      </div>
+      ${t.estimated_cost ? `<div class="tool-cost">${esc(t.estimated_cost)}</div>` : ''}
+    </div>`).join('')
+
+  const haAffiliate = (guide.tools_and_materials || []).some(t => t.affiliate_url)
+  const ftcNote = haAffiliate
+    ? `<p class="tool-ftc">Some links are affiliate links. Rootstock may earn a small commission at no extra cost to you.</p>`
+    : ''
+
+  // Steps (collapsible — first one open by default)
+  const stepItems = (guide.steps || []).map((s, i) => `
+    <div class="step-card ${i === 0 ? 'open' : ''}" data-step="${i}">
+      <div class="step-header">
+        <div class="step-num-badge">${s.step_number}</div>
+        <div class="step-title-block">
+          <div class="step-title">${esc(s.title)}</div>
+        </div>
+        <div class="step-collapse-icon">▾</div>
+      </div>
+      <div class="step-body">
+        <p class="step-instructions">${esc(s.instructions).replace(/\n/g,'<br>')}</p>
+        ${s.warning ? `<div class="step-warning"><div><div class="step-warning-label">⚠ Warning</div><div class="step-warning-text">${esc(s.warning)}</div></div></div>` : ''}
+        ${s.pro_tip ? `<div class="step-tip"><div><div class="step-tip-label">✦ Pro tip</div><div class="step-tip-text">${esc(s.pro_tip)}</div></div></div>` : ''}
+      </div>
+    </div>`).join('')
+
+  // MacGuyver substitutions
+  const hasSubs = guide.macguyver_substitutions?.length > 0
+  const macguyverSection = hasSubs ? `
+    <div class="guide-section">
+      <div class="guide-section-heading">🔧 MacGuyver Mode — Using what you have</div>
+      <div class="macguyver-box">
+        <div class="macguyver-items">
+          ${guide.macguyver_substitutions.map(s => `
+            <div class="macguyver-item">
+              <div class="macguyver-arrow">
+                <span class="macguyver-standard">${esc(s.standard_item)}</span>
+                <span style="color:var(--green-light);">→</span>
+                <span class="macguyver-sub-name">${esc(s.user_has)}</span>
+              </div>
+              <div class="macguyver-notes">${esc(s.substitution_notes)}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>` : ''
+
+  // Next steps
+  const nextSteps = (guide.next_steps || []).map(s => `
+    <div class="next-step-item">
+      <span class="next-step-arrow">→</span>
+      ${esc(s)}
+    </div>`).join('')
+
+  // Pro contractor button
+  const contractorBtn = isPro
+    ? `<button class="btn-cta btn-cta-pro" id="find-contractors-btn">🏗 Find local contractors</button>`
+    : `<button class="btn-cta btn-cta-outline" onclick="window.location.href='/app/settings.html'" title="Pro feature">🏗 Find contractors (Pro)</button>`
+
+  document.getElementById('guide-view').innerHTML = `
+    <!-- Header -->
+    <div class="guide-header">
+      <div class="guide-meta-row">
+        <span class="meta-badge meta-cat">${cat.icon} ${esc(cat.label)}</span>
+        <span class="meta-badge meta-diff ${esc(diffClass)}">${esc(guide.difficulty || 'Intermediate')}</span>
+        ${guide.estimated_time ? `<span class="meta-badge meta-time">⏱ ${esc(guide.estimated_time)}</span>` : ''}
+      </div>
+      <h1 class="guide-title">${esc(guide.project_title || 'Project Guide')}</h1>
+      ${guide.overview ? `<p class="guide-overview">${esc(guide.overview)}</p>` : ''}
+    </div>
+
+    <!-- Feedback row -->
+    <div class="feedback-row">
+      <span class="feedback-label">Was this guide helpful?</span>
+      <button class="btn-feedback" id="btn-up">👍 Yes</button>
+      <button class="btn-feedback" id="btn-down">👎 Not really</button>
+    </div>
+
+    <!-- Safety checklist -->
+    ${safetyItems ? `
+    <div class="guide-section">
+      <div class="guide-section-heading" style="color:#b45309;">⚠ Safety First — Read Before Starting</div>
+      <div class="safety-box">
+        <ul class="safety-list">${safetyItems}</ul>
+      </div>
+    </div>` : ''}
+
+    <!-- Tools & materials -->
+    ${toolItems ? `
+    <div class="guide-section">
+      <div class="guide-section-heading">🛠 Tools & Materials</div>
+      <div class="tools-list">${toolItems}</div>
+      ${ftcNote}
+    </div>` : ''}
+
+    <!-- Steps -->
+    ${stepItems ? `
+    <div class="guide-section">
+      <div class="guide-section-heading">📋 Step-by-Step Instructions</div>
+      <div class="steps-list">${stepItems}</div>
+    </div>` : ''}
+
+    ${macguyverSection}
+
+    <!-- When to call a pro -->
+    ${guide.when_to_call_a_pro ? `
+    <div class="guide-section">
+      <div class="guide-section-heading">📞 When to Call a Pro</div>
+      <div class="pro-box"><p>${esc(guide.when_to_call_a_pro)}</p></div>
+    </div>` : ''}
+
+    <!-- Regional note -->
+    ${guide.regional_note ? `
+    <div class="guide-section">
+      <div class="guide-section-heading">📍 Regional Note</div>
+      <div class="pro-box"><p>${esc(guide.regional_note)}</p></div>
+    </div>` : ''}
+
+    <!-- Next steps -->
+    ${nextSteps ? `
+    <div class="guide-section">
+      <div class="guide-section-heading">→ What to Do Next</div>
+      <div class="next-steps-list">${nextSteps}</div>
+    </div>` : ''}
+
+    <!-- Contractors section (populated by JS) -->
+    <div id="contractors-section" style="display:none;margin-bottom:2rem;">
+      <div class="guide-section-heading" style="margin-bottom:var(--space-4);">📍 Local Contractors Near You</div>
+      <div id="contractors-list"></div>
+    </div>
+
+    <!-- Bottom CTA bar -->
+    <div class="guide-cta-bar">
+      <a href="/app/project.html" class="btn-cta btn-cta-primary">+ Start a new project</a>
+      ${contractorBtn}
+      <a href="/app/" class="btn-cta btn-cta-outline">← Dashboard</a>
+    </div>`
+
+  show('guide-view')
+
+  // Wire up step collapse toggles
+  document.querySelectorAll('.step-header').forEach(header => {
+    header.addEventListener('click', () => {
+      header.closest('.step-card').classList.toggle('open')
+    })
+  })
+
+  // Wire up feedback buttons
+  wireFeedback()
+
+  // Wire up contractor button
+  if (isPro) {
+    document.getElementById('find-contractors-btn')?.addEventListener('click',
+      () => findContractors(payload.category, profile))
+  }
+}
+
+// ── Feedback ──────────────────────────────────────────────────────
+function wireFeedback() {
+  document.getElementById('btn-up')?.addEventListener('click',   () => submitFeedback(1))
+  document.getElementById('btn-down')?.addEventListener('click', () => submitFeedback(-1))
+}
+
+async function submitFeedback(rating) {
+  document.getElementById('btn-up').classList.toggle('active-up',   rating === 1)
+  document.getElementById('btn-down').classList.toggle('active-down', rating === -1)
+
+  if (!currentProjectId) return
+  try {
+    const client = await supabase()
+    await client.from('guide_feedback').upsert({
+      project_id: currentProjectId,
+      user_id:    (await client.auth.getUser()).data.user.id,
+      rating,
+    }, { onConflict: 'project_id,user_id' })
+  } catch (err) {
+    console.error('Feedback error:', err)
+  }
+}
+
+// ── Find contractors (Pro) ────────────────────────────────────────
+async function findContractors(category, profile) {
+  const btn     = document.getElementById('find-contractors-btn')
+  const section = document.getElementById('contractors-section')
+  const list    = document.getElementById('contractors-list')
+
+  const zipCode = profile?.zip_code || document.getElementById('zip_code')?.value?.trim()
+  if (!zipCode) {
+    list.innerHTML = '<p style="font-size:14px;color:var(--muted);">Please add your zip code in your profile settings to find local contractors.</p>'
+    section.style.display = 'block'; return
+  }
+
+  btn.textContent = 'Finding contractors…'
+  btn.disabled    = true
+
+  try {
+    const client  = await supabase()
+    const { data: { session } } = await client.auth.getSession()
+
+    const res  = await fetch('/api/find-contractors', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
+      body: JSON.stringify({ subcategory: category, zip_code: zipCode }),
+    })
+    const data = await res.json()
+
+    if (data.fallback) {
+      list.innerHTML = `<p style="font-size:14px;color:var(--muted);">${esc(data.message)}</p>`
+    } else {
+      list.innerHTML = `<div class="contractors-list">${(data.contractors || []).map(c => `
+        <div class="contractor-card">
+          <div class="contractor-name">${esc(c.name)}</div>
+          ${c.rating ? `<div class="contractor-rating">⭐ ${esc(String(c.rating))}</div>` : ''}
+          ${c.address ? `<div class="contractor-addr">📍 ${esc(c.address)}</div>` : ''}
+          <div class="contractor-links">
+            ${c.phone   ? `<a href="tel:${esc(c.phone)}" class="contractor-link">📞 ${esc(c.phone)}</a>` : ''}
+            ${c.website ? `<a href="${esc(c.website)}" target="_blank" rel="noopener" class="contractor-link">🌐 Website</a>` : ''}
+          </div>
+        </div>`).join('')}</div>`
+    }
+
+    section.style.display = 'block'
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  } catch (err) {
+    list.innerHTML = '<p style="font-size:14px;color:var(--muted);">Could not load contractors. Try again later.</p>'
+    section.style.display = 'block'
+  } finally {
+    btn.textContent = '🏗 Find local contractors'
+    btn.disabled    = false
+  }
+}
+
+init()
+</script>
+</body>
+</html>

@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Rootstock</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/rootstock.css">
+  <style>
+    /* ── Layout ──────────────────────────────────────────────────── */
+    body { background: var(--cream); min-height: 100vh; }
+
+    .app-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: white;
+      border-bottom: 1px solid var(--border);
+    }
+    .app-nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 var(--space-6);
+      height: 56px;
+      display: flex;
+      align-items: center;
+      gap: var(--space-6);
+    }
+
+    /* Logo */
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+    .nav-logo-mark {
+      width: 30px;
+      height: 30px;
+      background: var(--green-deep);
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .nav-logo-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--green-deep);
+      letter-spacing: -0.3px;
+    }
+
+    /* Nav links */
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      flex: 1;
+    }
+    .nav-link {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 6px 10px;
+      border-radius: 7px;
+      transition: color 0.12s, background 0.12s;
+      white-space: nowrap;
+    }
+    .nav-link:hover { color: var(--green-deep); background: var(--green-pale); text-decoration: none; }
+    .nav-link.active { color: var(--green-deep); font-weight: 500; background: var(--green-pale); }
+    .nav-link.disabled { opacity: 0.4; pointer-events: none; }
+
+    /* User area */
+    .nav-user {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+    .nav-user-name {
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--text);
+    }
+    .tier-badge {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 100px;
+    }
+    .tier-free { background: var(--cream); color: var(--bark-light); border: 1px solid var(--border); }
+    .tier-pro  { background: var(--green-deep); color: var(--green-light); }
+
+    .btn-signout {
+      font-size: 13px;
+      color: var(--muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 5px 8px;
+      border-radius: 6px;
+      font-family: 'DM Sans', sans-serif;
+      transition: color 0.12s, background 0.12s;
+    }
+    .btn-signout:hover { color: var(--text); background: var(--cream); }
+
+    /* ── Main content ────────────────────────────────────────────── */
+    .main { max-width: 1100px; margin: 0 auto; padding: 2.5rem var(--space-6) 5rem; }
+
+    /* ── Welcome header ──────────────────────────────────────────── */
+    .welcome-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--space-6);
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    .welcome-text { flex: 1; min-width: 200px; }
+    .welcome-greeting {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(22px, 3vw, 28px);
+      font-weight: 500;
+      color: var(--green-deep);
+      margin-bottom: 4px;
+      line-height: 1.25;
+    }
+    .welcome-sub { font-size: 14px; color: var(--muted); }
+
+    /* Tier status pill */
+    .tier-status {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      padding: 12px 16px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      flex-shrink: 0;
+    }
+    .tier-status-label { font-size: 13px; color: var(--muted); }
+    .tier-status-count { font-size: 13px; font-weight: 500; color: var(--text); }
+    .tier-status-bar {
+      width: 80px;
+      height: 5px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .tier-status-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.4s ease;
+      background: var(--green-mid);
+    }
+    .tier-status-fill.full { background: #ef4444; }
+    .btn-upgrade {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--green-mid);
+      border: 1.5px solid var(--green-mid);
+      background: none;
+      border-radius: 7px;
+      padding: 5px 11px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      white-space: nowrap;
+      transition: background 0.12s, color 0.12s;
+      text-decoration: none;
+    }
+    .btn-upgrade:hover { background: var(--green-pale); text-decoration: none; }
+
+    /* Pro status variant */
+    .tier-status.pro-status {
+      background: var(--green-deep);
+      border-color: transparent;
+    }
+    .tier-status.pro-status .tier-status-label,
+    .tier-status.pro-status .tier-status-count { color: var(--green-light); }
+
+    /* ── New project card ────────────────────────────────────────── */
+    .new-project-card {
+      background: var(--green-deep);
+      border-radius: var(--radius-xl);
+      padding: 2rem 2.25rem;
+      margin-bottom: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-6);
+      flex-wrap: wrap;
+    }
+    .new-project-card.locked { background: #e5e2db; }
+    .new-project-card.locked .npc-heading { color: var(--muted); }
+    .new-project-card.locked .npc-sub { color: var(--bark-light); }
+
+    .npc-left { flex: 1; min-width: 200px; }
+    .npc-eyebrow {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: var(--green-light);
+      margin-bottom: 6px;
+      opacity: 0.8;
+    }
+    .npc-heading {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 500;
+      color: white;
+      margin-bottom: 6px;
+      line-height: 1.25;
+    }
+    .npc-sub { font-size: 14px; color: rgba(192,221,151,0.75); line-height: 1.5; }
+
+    .btn-new-project {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--green-light);
+      color: var(--green-deep);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 12px 22px;
+      border-radius: 10px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.12s, transform 0.1s;
+      flex-shrink: 0;
+    }
+    .btn-new-project:hover { background: white; text-decoration: none; }
+    .btn-new-project:active { transform: scale(0.98); }
+    .btn-new-project.locked-btn {
+      background: var(--bark-light);
+      color: white;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    /* ── Section header ──────────────────────────────────────────── */
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: var(--space-4);
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--green-deep);
+    }
+    .section-link {
+      font-size: 13px;
+      color: var(--green-mid);
+      text-decoration: none;
+    }
+    .section-link:hover { text-decoration: underline; }
+
+    /* ── Projects grid ───────────────────────────────────────────── */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: var(--space-4);
+      margin-bottom: 2.5rem;
+    }
+    .project-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-5);
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      transition: border-color 0.12s, box-shadow 0.12s;
+      cursor: pointer;
+    }
+    .project-card:hover {
+      border-color: var(--green-mid);
+      box-shadow: 0 4px 16px rgba(31,61,12,0.08);
+      text-decoration: none;
+    }
+    .project-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .project-cat-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--green-mid);
+      background: var(--green-pale);
+      padding: 3px 9px;
+      border-radius: 100px;
+    }
+    .project-date { font-size: 11.5px; color: var(--muted); }
+    .project-title {
+      font-size: 14.5px;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.45;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .project-question {
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .project-card-arrow {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      color: var(--green-mid);
+      font-weight: 500;
+      margin-top: auto;
+      padding-top: var(--space-2);
+    }
+
+    /* ── Empty state ─────────────────────────────────────────────── */
+    .empty-state {
+      background: white;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-xl);
+      padding: 2.5rem 2rem;
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    .empty-icon { font-size: 36px; margin-bottom: var(--space-3); }
+    .empty-heading {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--green-deep);
+      margin-bottom: var(--space-2);
+    }
+    .empty-sub { font-size: 14px; color: var(--muted); max-width: 400px; margin: 0 auto; }
+
+    /* ── Category grid ───────────────────────────────────────────── */
+    .cat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: var(--space-3);
+      margin-bottom: 2.5rem;
+    }
+    .cat-tile {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4) var(--space-3);
+      text-align: center;
+      text-decoration: none;
+      transition: border-color 0.12s, background 0.12s, transform 0.1s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .cat-tile:hover {
+      border-color: var(--green-mid);
+      background: var(--green-pale);
+      transform: translateY(-1px);
+      text-decoration: none;
+    }
+    .cat-tile:active { transform: translateY(0); }
+    .cat-tile.locked-cat { opacity: 0.45; pointer-events: none; }
+    .cat-emoji { font-size: 24px; line-height: 1; }
+    .cat-name  { font-size: 12.5px; font-weight: 500; color: var(--text); line-height: 1.3; }
+
+    /* ── Upgrade banner ──────────────────────────────────────────── */
+    .upgrade-banner {
+      background: white;
+      border: 1.5px solid var(--green-light);
+      border-radius: var(--radius-xl);
+      padding: 1.5rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-6);
+      flex-wrap: wrap;
+    }
+    .upgrade-banner-left { flex: 1; min-width: 200px; }
+    .upgrade-eyebrow {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: var(--green-mid);
+      margin-bottom: 4px;
+    }
+    .upgrade-heading {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--green-deep);
+      margin-bottom: 4px;
+    }
+    .upgrade-sub { font-size: 13px; color: var(--muted); line-height: 1.55; }
+    .upgrade-perks {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      margin-top: var(--space-3);
+    }
+    .upgrade-perk {
+      font-size: 12px;
+      color: var(--green-deep);
+      background: var(--green-pale);
+      border-radius: 100px;
+      padding: 3px 10px;
+    }
+    .btn-upgrade-full {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--green-mid);
+      color: var(--green-pale);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 11px 20px;
+      border-radius: 9px;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: background 0.12s;
+      flex-shrink: 0;
+    }
+    .btn-upgrade-full:hover { background: var(--green-deep); text-decoration: none; }
+
+    /* ── Skeleton loading ────────────────────────────────────────── */
+    .skeleton-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-5);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+    .skel { border-radius: 6px; background: linear-gradient(90deg, #ece9e1 25%, #f4f1e9 50%, #ece9e1 75%); background-size: 200% 100%; animation: shimmer 1.3s infinite; }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    /* ── Responsive ──────────────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .welcome-row { flex-direction: column; gap: var(--space-4); }
+      .tier-status { width: 100%; justify-content: space-between; }
+      .new-project-card { padding: 1.5rem; }
+      .cat-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+      .upgrade-banner { padding: 1.25rem 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Navigation ───────────────────────────────────────────────── -->
+<nav class="app-nav">
+  <div class="app-nav-inner">
+    <a href="/app/" class="nav-logo">
+      <div class="nav-logo-mark">
+        <svg width="18" height="18" viewBox="0 0 22 22" fill="none">
+          <path d="M11 3C11 3 7 7 7 12C7 15 9 17 11 18C13 17 15 15 15 12C15 7 11 3 11 3Z" fill="#C0DD97"/>
+          <path d="M11 18L11 21" stroke="#C0DD97" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M11 15C8 13 6 14 6 14" stroke="#C0DD97" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="M11 17C13.5 15 15.5 16 15.5 16" stroke="#C0DD97" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="nav-logo-name">Rootstock</span>
+    </a>
+
+    <div class="nav-links">
+      <a href="/app/"            class="nav-link active">Dashboard</a>
+      <a href="/app/project.html" class="nav-link">New Project</a>
+      <a href="/app/inventory.html"    class="nav-link">Inventory</a>
+      <a href="/app/journal.html"      class="nav-link">Journal</a>
+      <a href="/app/forum.html"        class="nav-link">Forum</a>
+      <a href="/app/tool-reviews.html" class="nav-link">Reviews</a>
+      <a href="/app/settings.html"     class="nav-link">Settings</a>
+    </div>
+
+    <div class="nav-user" id="nav-user">
+      <!-- Populated by JS -->
+      <div class="skel" style="width:80px;height:16px;"></div>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Main ─────────────────────────────────────────────────────── -->
+<main class="main" id="main" style="display:none;">
+
+  <!-- Welcome row -->
+  <div class="welcome-row">
+    <div class="welcome-text">
+      <h1 class="welcome-greeting" id="greeting">Good morning.</h1>
+      <p class="welcome-sub" id="welcome-sub">What are you building today?</p>
+    </div>
+    <div id="tier-status-container"></div>
+  </div>
+
+  <!-- New project card -->
+  <div id="new-project-card"></div>
+
+  <!-- Recent projects -->
+  <div id="projects-section"></div>
+
+  <!-- Start by category -->
+  <div class="section-header">
+    <h2 class="section-title">Start by category</h2>
+  </div>
+  <div class="cat-grid" id="cat-grid"></div>
+
+  <!-- Upgrade banner -->
+  <div id="upgrade-banner"></div>
+
+</main>
+
+<!-- Loading skeleton (shown while data loads) -->
+<div id="loading" style="max-width:1100px;margin:2.5rem auto;padding:0 1.5rem;">
+  <div style="height:36px;width:220px;" class="skel" style="border-radius:8px;margin-bottom:2rem;"></div>
+  <div style="height:120px;border-radius:16px;margin-bottom:2rem;" class="skel"></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:2rem;">
+    <div class="skeleton-card"><div class="skel" style="height:14px;width:70%;"></div><div class="skel" style="height:12px;width:55%;"></div><div class="skel" style="height:12px;width:40%;"></div></div>
+    <div class="skeleton-card"><div class="skel" style="height:14px;width:60%;"></div><div class="skel" style="height:12px;width:75%;"></div><div class="skel" style="height:12px;width:45%;"></div></div>
+    <div class="skeleton-card"><div class="skel" style="height:14px;width:65%;"></div><div class="skel" style="height:12px;width:50%;"></div><div class="skel" style="height:12px;width:60%;"></div></div>
+  </div>
+</div>
+
+<script type="module">
+import { requireAuth, getProfile, signOut, supabase } from '/js/auth.js'
+
+// ── Category reference data (mirrors seed.sql) ────────────────────
+const CATEGORIES = [
+  { id: 'landscape',        label: 'Landscape & Gardening',     icon: '🌿' },
+  { id: 'cooking',          label: 'Cooking & Baking',           icon: '🍳' },
+  { id: 'canning',          label: 'Canning & Preservation',     icon: '🫙' },
+  { id: 'auto',             label: 'Auto & Small Engine',        icon: '🔧' },
+  { id: 'plumbing',         label: 'Plumbing',                   icon: '🚿' },
+  { id: 'electrical',       label: 'Electrical',                  icon: '⚡' },
+  { id: 'solar',            label: 'Solar & Off-Grid',           icon: '☀️' },
+  { id: 'animals',          label: 'Animals & Livestock',        icon: '🐄' },
+  { id: 'building',         label: 'Building & Renovation',      icon: '🪵' },
+  { id: 'self-sufficiency', label: 'Other Self-Sufficiency',     icon: '🌱' },
+]
+
+const CAT_MAP = Object.fromEntries(CATEGORIES.map(c => [c.id, c]))
+
+// ── Utilities ─────────────────────────────────────────────────────
+function esc(str) {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+}
+
+function timeAgo(dateStr) {
+  const diff = Date.now() - new Date(dateStr).getTime()
+  const mins  = Math.floor(diff / 60000)
+  const hours = Math.floor(diff / 3600000)
+  const days  = Math.floor(diff / 86400000)
+  if (mins  <  1) return 'just now'
+  if (mins  < 60) return `${mins}m ago`
+  if (hours < 24) return `${hours}h ago`
+  if (days  <  7) return `${days}d ago`
+  return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+}
+
+function greeting() {
+  const h = new Date().getHours()
+  if (h >= 5  && h < 12) return 'Good morning'
+  if (h >= 12 && h < 18) return 'Good afternoon'
+  if (h >= 18 && h < 22) return 'Good evening'
+  return 'Working late'
+}
+
+// ── Render nav user ───────────────────────────────────────────────
+function renderNav(profile, email) {
+  const name  = esc(profile.display_name || email?.split('@')[0] || 'Account')
+  const isPro = profile.subscription_tier === 'pro'
+  document.getElementById('nav-user').innerHTML = `
+    <span class="nav-user-name">${name}</span>
+    <span class="tier-badge ${isPro ? 'tier-pro' : 'tier-free'}">${isPro ? 'Pro' : 'Free'}</span>
+    <button class="btn-signout" id="signout-btn">Sign out</button>
+  `
+  document.getElementById('signout-btn').addEventListener('click', signOut)
+}
+
+// ── Render welcome + tier status ──────────────────────────────────
+function renderWelcome(profile, email) {
+  const name   = profile.display_name || email?.split('@')[0] || null
+  const isPro  = profile.subscription_tier === 'pro'
+  const count  = profile.project_count ?? 0
+  const FREE_LIMIT = 2
+
+  document.getElementById('greeting').textContent =
+    name ? `${greeting()}, ${name}.` : `${greeting()}.`
+
+  document.getElementById('welcome-sub').textContent = isPro
+    ? 'Pro member · unlimited guides.'
+    : count >= FREE_LIMIT
+      ? "You've used all your free guides — upgrade to keep building."
+      : `Free tier · ${FREE_LIMIT - count} guide${FREE_LIMIT - count === 1 ? '' : 's'} remaining.`
+
+  // Tier status widget
+  const pct   = isPro ? 100 : Math.min((count / FREE_LIMIT) * 100, 100)
+  const isFull = !isPro && count >= FREE_LIMIT
+
+  document.getElementById('tier-status-container').innerHTML = isPro
+    ? `<div class="tier-status pro-status">
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 1l1.7 4.3H14L10.1 8l1.4 4.3L7.5 10 3.5 12.3 4.9 8 1 5.3h4.8L7.5 1Z" fill="#C0DD97"/></svg>
+        <span class="tier-status-count">Pro · Unlimited</span>
+      </div>`
+    : `<div class="tier-status">
+        <span class="tier-status-label">Guides used</span>
+        <div class="tier-status-bar">
+          <div class="tier-status-fill ${isFull ? 'full' : ''}" style="width:${pct}%"></div>
+        </div>
+        <span class="tier-status-count">${count} / ${FREE_LIMIT}</span>
+        ${isFull ? `<a href="/app/settings.html" class="btn-upgrade">Upgrade →</a>` : ''}
+      </div>`
+}
+
+// ── Render new-project card ───────────────────────────────────────
+function renderNewProjectCard(profile) {
+  const isPro  = profile.subscription_tier === 'pro'
+  const count  = profile.project_count ?? 0
+  const locked = !isPro && count >= 2
+
+  document.getElementById('new-project-card').innerHTML = locked
+    ? `<div class="new-project-card locked" style="margin-bottom:2.5rem;">
+        <div class="npc-left">
+          <p class="npc-heading">Upgrade to start a new project</p>
+          <p class="npc-sub" style="color:var(--muted);">You've used your 2 free guides. Pro unlocks unlimited projects, MacGuyver mode, a build journal, and more.</p>
+        </div>
+        <a href="/app/settings.html" class="btn-new-project locked-btn">Upgrade to Pro — $9/mo</a>
+      </div>`
+    : `<div class="new-project-card" style="margin-bottom:2.5rem;">
+        <div class="npc-left">
+          <p class="npc-eyebrow">AI Project Guide</p>
+          <p class="npc-heading">What are you building today?</p>
+          <p class="npc-sub">Describe your project and get a complete step-by-step guide in seconds.</p>
+        </div>
+        <a href="/app/project.html" class="btn-new-project">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Start new project
+        </a>
+      </div>`
+}
+
+// ── Render recent projects ────────────────────────────────────────
+function renderProjects(projects) {
+  const el = document.getElementById('projects-section')
+
+  if (!projects?.length) {
+    el.innerHTML = `
+      <div class="section-header"><h2 class="section-title">Your projects</h2></div>
+      <div class="empty-state">
+        <div class="empty-icon">🌱</div>
+        <h3 class="empty-heading">No projects yet</h3>
+        <p class="empty-sub">Start your first project above and get a complete AI-generated guide in seconds.</p>
+      </div>`
+    return
+  }
+
+  const cards = projects.map(p => {
+    const cat   = CAT_MAP[p.category] ?? { label: p.category, icon: '📋' }
+    const title = p.guide_outputs?.[0]?.guide_json?.project_title || esc(p.question)
+    return `
+      <a href="/app/project.html?id=${esc(p.id)}" class="project-card">
+        <div class="project-card-top">
+          <span class="project-cat-badge">${cat.icon} ${esc(cat.label)}</span>
+          <span class="project-date">${timeAgo(p.created_at)}</span>
+        </div>
+        <p class="project-title">${esc(title)}</p>
+        <p class="project-question">${esc(p.question)}</p>
+        <span class="project-card-arrow">
+          View guide
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2.5 6.5h8M7 3l3.5 3.5L7 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </a>`
+  }).join('')
+
+  el.innerHTML = `
+    <div class="section-header">
+      <h2 class="section-title">Recent projects</h2>
+    </div>
+    <div class="projects-grid">${cards}</div>`
+}
+
+// ── Render category grid ──────────────────────────────────────────
+function renderCategories(profile) {
+  const locked = !profile || (profile.subscription_tier !== 'pro' && profile.project_count >= 2)
+
+  document.getElementById('cat-grid').innerHTML = CATEGORIES.map(c => `
+    <a href="/app/project.html?category=${esc(c.id)}"
+       class="cat-tile${locked ? ' locked-cat' : ''}"
+       title="Start a ${esc(c.label)} project">
+      <span class="cat-emoji">${c.icon}</span>
+      <span class="cat-name">${esc(c.label)}</span>
+    </a>`
+  ).join('')
+}
+
+// ── Render upgrade banner ─────────────────────────────────────────
+function renderUpgradeBanner(profile) {
+  const el = document.getElementById('upgrade-banner')
+  if (profile.subscription_tier === 'pro') { el.innerHTML = ''; return }
+
+  el.innerHTML = `
+    <div class="upgrade-banner">
+      <div class="upgrade-banner-left">
+        <p class="upgrade-eyebrow">Rootstock Pro — $9/month</p>
+        <h3 class="upgrade-heading">Unlock the full homestead.</h3>
+        <p class="upgrade-sub">Unlimited AI guides, MacGuyver inventory mode, a build journal with photos, full forum access, and local contractor referrals.</p>
+        <div class="upgrade-perks">
+          <span class="upgrade-perk">Unlimited guides</span>
+          <span class="upgrade-perk">MacGuyver mode</span>
+          <span class="upgrade-perk">Build journal</span>
+          <span class="upgrade-perk">Photo uploads</span>
+          <span class="upgrade-perk">Contractor lookup</span>
+        </div>
+      </div>
+      <a href="/app/settings.html" class="btn-upgrade-full">
+        Upgrade to Pro
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 7h9M8 3.5L11.5 7 8 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>`
+}
+
+// ── Boot ──────────────────────────────────────────────────────────
+async function init() {
+  // Auth guard — redirects to /app/login.html if not signed in
+  const session = await requireAuth()
+  if (!session) return
+
+  try {
+    const client = await supabase()
+
+    // Parallel: profile + recent projects
+    const [profile, projectsResult] = await Promise.all([
+      getProfile(),
+      client
+        .from('projects')
+        .select('id, question, category, created_at, guide_outputs(guide_json)')
+        .eq('user_id', session.user.id)
+        .order('created_at', { ascending: false })
+        .limit(6),
+    ])
+
+    const email    = session.user.email
+    const projects = projectsResult.data ?? []
+
+    // Render everything
+    renderNav(profile, email)
+    renderWelcome(profile, email)
+    renderNewProjectCard(profile)
+    renderProjects(projects)
+    renderCategories(profile)
+    renderUpgradeBanner(profile)
+
+    // Swap loading → content
+    document.getElementById('loading').style.display = 'none'
+    document.getElementById('main').style.display    = 'block'
+
+  } catch (err) {
+    console.error('Dashboard init error:', err)
+    document.getElementById('loading').innerHTML = `
+      <div style="text-align:center;padding:4rem 2rem;color:var(--muted);font-size:14px;">
+        Something went wrong loading your dashboard.
+        <br><a href="/app/login.html" style="color:var(--green-mid);margin-top:8px;display:inline-block;">Try signing in again</a>
+      </div>`
+  }
+}
+
+init()
+</script>
+</body>
+</html>

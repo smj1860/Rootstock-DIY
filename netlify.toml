@@ -1,0 +1,52 @@
+[build]
+  publish   = "public"
+  functions = "netlify/functions"
+  command   = "echo 'Static site — no build step'"
+
+[dev]
+  port        = 8888
+  publish     = "public"
+  autoLaunch  = false
+
+# ── Route /api/* to Netlify Functions ──────────────────────────
+[[redirects]]
+  from   = "/api/*"
+  to     = "/.netlify/functions/:splat"
+  status = 200
+
+# ── SPA-style fallback for /app/* pages ────────────────────────
+[[redirects]]
+  from   = "/app/*"
+  to     = "/app/:splat.html"
+  status = 200
+
+# ── Security headers on all responses ──────────────────────────
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options           = "DENY"
+    X-Content-Type-Options    = "nosniff"
+    X-XSS-Protection          = "1; mode=block"
+    Referrer-Policy           = "strict-origin-when-cross-origin"
+    Permissions-Policy        = "camera=(), microphone=(), geolocation=()"
+
+# ── Long cache for fingerprinted assets ────────────────────────
+[[headers]]
+  for = "/css/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/js/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# ── Node version for Netlify Functions ─────────────────────────
+[functions]
+  node_bundler = "esbuild"
+
+[context.production.environment]
+  NODE_ENV = "production"
+
+[context.deploy-preview.environment]
+  NODE_ENV = "development"

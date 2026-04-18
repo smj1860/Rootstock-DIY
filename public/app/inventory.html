@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventory — Rootstock</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/rootstock.css">
+  <style>
+    body { background: var(--cream); min-height: 100vh; }
+
+    /* ── Nav ──────────────────────────────────────────────────────── */
+    .app-nav { position: sticky; top: 0; z-index: 100; background: white; border-bottom: 1px solid var(--border); }
+    .app-nav-inner {
+      max-width: 1100px; margin: 0 auto; padding: 0 var(--space-6);
+      height: 56px; display: flex; align-items: center; gap: var(--space-6);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; flex-shrink: 0; }
+    .nav-logo-mark { width: 30px; height: 30px; background: var(--green-deep); border-radius: 7px; display: flex; align-items: center; justify-content: center; }
+    .nav-logo-name { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 600; color: var(--green-deep); letter-spacing: -0.3px; }
+    .nav-links { display: flex; align-items: center; gap: 2px; flex: 1; }
+    .nav-link { font-size: 14px; font-weight: 400; color: var(--muted); text-decoration: none; padding: 6px 10px; border-radius: 7px; transition: color 0.12s, background 0.12s; white-space: nowrap; }
+    .nav-link:hover { color: var(--green-deep); background: var(--green-pale); text-decoration: none; }
+    .nav-link.active { color: var(--green-deep); font-weight: 500; background: var(--green-pale); }
+    .nav-user { display: flex; align-items: center; gap: var(--space-3); margin-left: auto; flex-shrink: 0; }
+    .nav-user-name { font-size: 13.5px; font-weight: 500; color: var(--text); }
+    .tier-badge { font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 2px 8px; border-radius: 100px; }
+    .tier-free { background: var(--cream); color: var(--bark-light); border: 1px solid var(--border); }
+    .tier-pro  { background: var(--green-deep); color: var(--green-light); }
+    .btn-signout { font-size: 13px; color: var(--muted); background: none; border: none; cursor: pointer; padding: 5px 8px; border-radius: 6px; font-family: 'DM Sans', sans-serif; transition: color 0.12s, background 0.12s; }
+    .btn-signout:hover { color: var(--text); background: var(--cream); }
+
+    /* ── Skeleton ─────────────────────────────────────────────────── */
+    .skel { border-radius: 6px; background: linear-gradient(90deg, #ece9e1 25%, #f4f1e9 50%, #ece9e1 75%); background-size: 200% 100%; animation: shimmer 1.3s infinite; }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    /* ── Page layout ──────────────────────────────────────────────── */
+    .main { max-width: 1100px; margin: 0 auto; padding: 2.5rem var(--space-6) 5rem; }
+
+    /* ── Page header ──────────────────────────────────────────────── */
+    .page-header {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      gap: var(--space-4); margin-bottom: 1.5rem; flex-wrap: wrap;
+    }
+    .page-title-block { flex: 1; min-width: 200px; }
+    .page-title {
+      font-family: 'Playfair Display', serif; font-size: clamp(22px, 3vw, 28px);
+      font-weight: 500; color: var(--green-deep); margin-bottom: 3px;
+    }
+    .page-sub { font-size: 14px; color: var(--muted); }
+    .btn-add {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--green-mid); color: var(--green-pale);
+      font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+      padding: 9px 18px; border: none; border-radius: 9px; cursor: pointer;
+      transition: background 0.12s; white-space: nowrap; flex-shrink: 0;
+    }
+    .btn-add:hover { background: var(--green-deep); }
+
+    /* ── Toolbar ──────────────────────────────────────────────────── */
+    .toolbar {
+      display: flex; align-items: center; gap: var(--space-3);
+      margin-bottom: 1.5rem; flex-wrap: wrap;
+    }
+    .search-wrap { position: relative; flex: 1; min-width: 180px; max-width: 320px; }
+    .search-wrap svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+    .search-input {
+      width: 100%; font-family: 'DM Sans', sans-serif; font-size: 14px;
+      color: var(--text); background: white; border: 1px solid var(--border);
+      border-radius: 9px; padding: 8px 12px 8px 34px; outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .search-input:focus { border-color: var(--green-mid); box-shadow: 0 0 0 3px rgba(59,109,17,0.1); }
+    .search-input::placeholder { color: var(--muted); opacity: 0.6; }
+    .filter-select {
+      font-family: 'DM Sans', sans-serif; font-size: 13.5px; color: var(--text);
+      background: white; border: 1px solid var(--border); border-radius: 9px;
+      padding: 8px 30px 8px 12px; outline: none; cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236b6b58' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 10px center;
+      transition: border-color 0.15s;
+    }
+    .filter-select:focus { border-color: var(--green-mid); outline: none; }
+    .item-count { font-size: 13px; color: var(--muted); margin-left: auto; white-space: nowrap; }
+
+    /* ── Item grid ────────────────────────────────────────────────── */
+    .item-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: var(--space-4);
+    }
+    .item-card {
+      background: white; border: 1px solid var(--border); border-radius: var(--radius-xl);
+      padding: var(--space-4) var(--space-5); display: flex; flex-direction: column; gap: var(--space-3);
+      transition: box-shadow 0.15s, border-color 0.15s;
+    }
+    .item-card:hover { box-shadow: 0 4px 16px rgba(31,61,12,0.07); border-color: rgba(92,74,42,0.22); }
+
+    /* Card with image */
+    .item-card.has-image { padding: 0; overflow: hidden; }
+    .item-card.has-image .item-img {
+      width: 100%; height: 160px; object-fit: cover;
+      border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    }
+    .item-card.has-image .item-body { padding: var(--space-4) var(--space-5); display: flex; flex-direction: column; gap: var(--space-3); }
+
+    .item-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-2); }
+    .item-name { font-size: 15px; font-weight: 500; color: var(--text); line-height: 1.3; flex: 1; }
+    .item-actions { display: flex; gap: 4px; flex-shrink: 0; }
+    .btn-icon {
+      width: 28px; height: 28px; border: none; background: none; cursor: pointer;
+      border-radius: 6px; display: flex; align-items: center; justify-content: center;
+      color: var(--muted); transition: background 0.12s, color 0.12s;
+    }
+    .btn-icon:hover { background: var(--cream); color: var(--text); }
+    .btn-icon.delete:hover { background: #fef2f2; color: #991b1b; }
+
+    .item-meta { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+    .item-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 12px; padding: 2px 8px; border-radius: 100px;
+      border: 1px solid var(--border);
+    }
+    .badge-cat  { background: var(--cream); color: var(--bark-light); }
+    .badge-qty  { background: var(--green-pale); color: var(--green-deep); border-color: transparent; }
+    .badge-cond-new   { background: #f0fdf4; color: #166534; border-color: #bbf7d0; }
+    .badge-cond-good  { background: var(--green-pale); color: var(--green-deep); border-color: transparent; }
+    .badge-cond-fair  { background: #fffbeb; color: #92400e; border-color: #fde68a; }
+    .badge-cond-poor  { background: #fef2f2; color: #991b1b; border-color: #fecaca; }
+
+    .item-notes { font-size: 13px; color: var(--muted); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+    /* ── Empty state ──────────────────────────────────────────────── */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center; padding: 4rem 2rem;
+      background: white; border: 1.5px dashed var(--border); border-radius: var(--radius-xl);
+    }
+    .empty-icon { font-size: 40px; margin-bottom: var(--space-3); line-height: 1; }
+    .empty-heading { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 500; color: var(--green-deep); margin-bottom: 6px; }
+    .empty-sub { font-size: 14px; color: var(--muted); margin-bottom: var(--space-4); max-width: 320px; margin-left: auto; margin-right: auto; }
+
+    /* ── Pro image-upload upsell ──────────────────────────────────── */
+    .pro-upsell {
+      margin-top: 2rem;
+      display: flex; align-items: center; gap: var(--space-4);
+      padding: 1rem 1.25rem; background: var(--green-deep);
+      border-radius: var(--radius-xl); flex-wrap: wrap;
+    }
+    .pro-upsell-text { flex: 1; min-width: 180px; }
+    .pro-upsell-eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.13em; text-transform: uppercase; color: var(--green-light); margin-bottom: 3px; }
+    .pro-upsell-heading { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 500; color: white; margin-bottom: 3px; }
+    .pro-upsell-sub { font-size: 13px; color: rgba(192,221,151,0.75); }
+    .btn-upgrade-sm {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: var(--green-mid); color: var(--green-pale);
+      font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+      padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer;
+      text-decoration: none; white-space: nowrap; transition: background 0.12s;
+    }
+    .btn-upgrade-sm:hover { background: #2e5610; text-decoration: none; }
+
+    /* ── Drawer overlay ───────────────────────────────────────────── */
+    .overlay {
+      position: fixed; inset: 0; background: rgba(26,26,20,0.45);
+      z-index: 200; display: none; align-items: flex-end;
+      backdrop-filter: blur(2px);
+    }
+    .overlay.open { display: flex; }
+
+    @media (min-width: 600px) {
+      .overlay { align-items: center; justify-content: center; }
+    }
+
+    /* ── Drawer (bottom sheet on mobile, centered modal on desktop) ── */
+    .drawer {
+      background: white; width: 100%; max-width: 520px;
+      border-radius: 20px 20px 0 0; padding: 1.75rem 1.5rem 2rem;
+      box-shadow: 0 -8px 40px rgba(31,61,12,0.12);
+      transform: translateY(100%); transition: transform 0.28s cubic-bezier(0.32,0.72,0,1);
+      max-height: 92vh; overflow-y: auto;
+    }
+    @media (min-width: 600px) {
+      .drawer { border-radius: 20px; transform: scale(0.96); opacity: 0; transition: transform 0.22s ease, opacity 0.22s ease; }
+    }
+    .overlay.open .drawer { transform: translateY(0); }
+    @media (min-width: 600px) {
+      .overlay.open .drawer { transform: scale(1); opacity: 1; }
+    }
+
+    .drawer-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+    .drawer-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 500; color: var(--green-deep); }
+    .btn-close {
+      width: 32px; height: 32px; border: none; background: var(--cream); cursor: pointer;
+      border-radius: 8px; display: flex; align-items: center; justify-content: center;
+      color: var(--muted); transition: background 0.12s, color 0.12s;
+    }
+    .btn-close:hover { background: #ece9e1; color: var(--text); }
+
+    /* Form fields in drawer */
+    .form-row { margin-bottom: 1rem; }
+    .form-row label { display: block; font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 5px; }
+    .form-row label .opt { font-weight: 400; color: var(--muted); }
+    .field-input {
+      width: 100%; font-family: 'DM Sans', sans-serif; font-size: 14.5px;
+      color: var(--text); background: var(--cream); border: 1px solid var(--border);
+      border-radius: 9px; padding: 10px 13px; outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .field-input:focus { border-color: var(--green-mid); box-shadow: 0 0 0 3px rgba(59,109,17,0.1); background: white; }
+    .field-input::placeholder { color: var(--muted); opacity: 0.55; }
+    select.field-input {
+      appearance: none; cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236b6b58' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 13px center;
+      padding-right: 34px;
+    }
+    textarea.field-input { resize: vertical; min-height: 80px; }
+
+    .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-bottom: 1rem; }
+
+    /* Image upload zone */
+    .upload-zone {
+      border: 2px dashed var(--border); border-radius: 12px;
+      padding: 1.25rem; text-align: center; cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .upload-zone:hover, .upload-zone.drag-over { border-color: var(--green-mid); background: var(--green-pale); }
+    .upload-zone input { display: none; }
+    .upload-icon { font-size: 28px; margin-bottom: 6px; }
+    .upload-label { font-size: 13.5px; color: var(--muted); line-height: 1.5; }
+    .upload-label strong { color: var(--green-mid); }
+    .upload-preview { position: relative; display: inline-block; margin-top: 8px; }
+    .upload-preview img { width: 100%; max-height: 160px; object-fit: cover; border-radius: 8px; display: block; }
+    .upload-preview-remove {
+      position: absolute; top: 6px; right: 6px; width: 24px; height: 24px;
+      background: rgba(26,26,20,0.6); border: none; border-radius: 50%; cursor: pointer;
+      color: white; display: flex; align-items: center; justify-content: center;
+      font-size: 14px; line-height: 1;
+    }
+    .upload-pro-lock {
+      padding: 0.75rem 1rem; background: var(--cream); border: 1px solid var(--border);
+      border-radius: 10px; display: flex; align-items: center; gap: var(--space-3);
+    }
+    .upload-pro-lock-text { font-size: 13px; color: var(--muted); flex: 1; line-height: 1.5; }
+    .upload-pro-lock-text a { color: var(--green-mid); font-weight: 500; }
+
+    .drawer-footer { display: flex; gap: var(--space-3); margin-top: 1.25rem; }
+    .btn-primary {
+      flex: 1; padding: 11px; background: var(--green-mid); color: var(--green-pale);
+      border: none; border-radius: 9px; font-family: 'DM Sans', sans-serif;
+      font-size: 14.5px; font-weight: 500; cursor: pointer; transition: background 0.12s;
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+    }
+    .btn-primary:hover:not(:disabled) { background: var(--green-deep); }
+    .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
+    .btn-secondary {
+      padding: 11px 18px; background: white; color: var(--text);
+      border: 1px solid var(--border); border-radius: 9px; font-family: 'DM Sans', sans-serif;
+      font-size: 14.5px; font-weight: 400; cursor: pointer; transition: background 0.12s;
+    }
+    .btn-secondary:hover { background: var(--cream); }
+
+    /* Spinner */
+    .spin { width: 15px; height: 15px; border: 2px solid rgba(192,221,151,0.4); border-top-color: var(--green-light); border-radius: 50%; animation: rotate 0.6s linear infinite; display: none; }
+    @keyframes rotate { to { transform: rotate(360deg); } }
+    .btn-primary.loading .spin { display: block; }
+    .btn-primary.loading .btn-label { display: none; }
+
+    /* Alert */
+    .drawer-alert { padding: 9px 13px; border-radius: 8px; font-size: 13px; margin-bottom: 1rem; display: none; line-height: 1.5; }
+    .drawer-alert.show { display: block; }
+    .drawer-alert.error   { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+    .drawer-alert.success { background: var(--green-pale); color: var(--green-deep); border: 1px solid var(--green-light); }
+
+    /* Delete confirm inline */
+    .confirm-delete {
+      padding: 12px 14px; background: #fef2f2; border: 1px solid #fecaca;
+      border-radius: 10px; margin-top: var(--space-3); display: none;
+    }
+    .confirm-delete.show { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+    .confirm-delete-text { font-size: 13px; color: #991b1b; flex: 1; }
+    .btn-confirm-delete {
+      padding: 6px 14px; background: #dc2626; color: white;
+      border: none; border-radius: 7px; font-family: 'DM Sans', sans-serif;
+      font-size: 13px; font-weight: 500; cursor: pointer;
+    }
+    .btn-cancel-delete {
+      padding: 6px 14px; background: none; color: var(--muted);
+      border: 1px solid var(--border); border-radius: 7px; font-family: 'DM Sans', sans-serif;
+      font-size: 13px; cursor: pointer;
+    }
+
+    /* ── Responsive ──────────────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .page-header { flex-direction: column; align-items: flex-start; }
+      .item-grid { grid-template-columns: 1fr; }
+      .form-row-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Navigation ──────────────────────────────────────────────────── -->
+<nav class="app-nav">
+  <div class="app-nav-inner">
+    <a href="/app/" class="nav-logo">
+      <div class="nav-logo-mark">
+        <svg width="18" height="18" viewBox="0 0 22 22" fill="none">
+          <path d="M11 3C11 3 7 7 7 12C7 15 9 17 11 18C13 17 15 15 15 12C15 7 11 3 11 3Z" fill="#C0DD97"/>
+          <path d="M11 18L11 21" stroke="#C0DD97" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M11 15C8 13 6 14 6 14" stroke="#C0DD97" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="M11 17C13.5 15 15.5 16 15.5 16" stroke="#C0DD97" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="nav-logo-name">Rootstock</span>
+    </a>
+
+    <div class="nav-links">
+      <a href="/app/"              class="nav-link">Dashboard</a>
+      <a href="/app/project.html"  class="nav-link">New Project</a>
+      <a href="/app/inventory.html"    class="nav-link active">Inventory</a>
+      <a href="/app/journal.html"      class="nav-link">Journal</a>
+      <a href="/app/forum.html"        class="nav-link">Forum</a>
+      <a href="/app/tool-reviews.html" class="nav-link">Reviews</a>
+      <a href="/app/settings.html" class="nav-link">Settings</a>
+    </div>
+
+    <div class="nav-user" id="nav-user">
+      <div class="skel" style="width:80px;height:16px;"></div>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Main ─────────────────────────────────────────────────────────── -->
+<main class="main" id="main" style="display:none;">
+
+  <!-- Page header -->
+  <div class="page-header">
+    <div class="page-title-block">
+      <h1 class="page-title">My Inventory</h1>
+      <p class="page-sub">Track the tools and supplies you have on hand.</p>
+    </div>
+    <button class="btn-add" id="btn-add">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      Add Item
+    </button>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+        <circle cx="6.5" cy="6.5" r="5" stroke="#6b6b58" stroke-width="1.5"/>
+        <path d="M10.5 10.5L13.5 13.5" stroke="#6b6b58" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <input type="search" class="search-input" id="search-input" placeholder="Search items…">
+    </div>
+    <select class="filter-select" id="filter-cat">
+      <option value="">All categories</option>
+      <option value="landscape">Landscape & Gardening</option>
+      <option value="cooking">Cooking & Baking</option>
+      <option value="canning">Canning & Preservation</option>
+      <option value="auto">Auto & Small Engine</option>
+      <option value="plumbing">Plumbing</option>
+      <option value="electrical">Electrical</option>
+      <option value="solar">Solar & Off-Grid</option>
+      <option value="animals">Animals & Livestock</option>
+      <option value="building">Building & Renovation</option>
+      <option value="self-sufficiency">Other Self-Sufficiency</option>
+      <option value="general">General / Tools</option>
+    </select>
+    <select class="filter-select" id="filter-cond">
+      <option value="">Any condition</option>
+      <option value="new">New</option>
+      <option value="good">Good</option>
+      <option value="fair">Fair</option>
+      <option value="poor">Poor</option>
+    </select>
+    <span class="item-count" id="item-count"></span>
+  </div>
+
+  <!-- Item grid -->
+  <div class="item-grid" id="item-grid"></div>
+
+  <!-- Pro image upsell (shown for free users) -->
+  <div class="pro-upsell" id="pro-upsell" style="display:none;">
+    <div class="pro-upsell-text">
+      <div class="pro-upsell-eyebrow">Pro Feature</div>
+      <div class="pro-upsell-heading">Add photos to your inventory</div>
+      <div class="pro-upsell-sub">Upgrade to Pro to attach photos to tools and supplies — and unlock MacGuyver mode, unlimited guides, and more.</div>
+    </div>
+    <a href="#" class="btn-upgrade-sm" id="btn-upgrade-upsell">Upgrade to Pro →</a>
+  </div>
+
+</main>
+
+<!-- Loading skeleton -->
+<div id="loading" style="max-width:1100px;margin:2.5rem auto;padding:0 1.5rem;">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div class="skel" style="height:28px;width:180px;"></div>
+      <div class="skel" style="height:14px;width:260px;"></div>
+    </div>
+    <div class="skel" style="height:38px;width:110px;border-radius:9px;"></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">
+    <div style="background:white;border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px;">
+      <div class="skel" style="height:15px;width:70%;"></div>
+      <div style="display:flex;gap:8px;"><div class="skel" style="height:22px;width:80px;border-radius:100px;"></div><div class="skel" style="height:22px;width:60px;border-radius:100px;"></div></div>
+      <div class="skel" style="height:12px;width:90%;"></div>
+    </div>
+    <div style="background:white;border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px;">
+      <div class="skel" style="height:15px;width:55%;"></div>
+      <div style="display:flex;gap:8px;"><div class="skel" style="height:22px;width:70px;border-radius:100px;"></div><div class="skel" style="height:22px;width:50px;border-radius:100px;"></div></div>
+      <div class="skel" style="height:12px;width:75%;"></div>
+    </div>
+    <div style="background:white;border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px;">
+      <div class="skel" style="height:15px;width:65%;"></div>
+      <div style="display:flex;gap:8px;"><div class="skel" style="height:22px;width:65px;border-radius:100px;"></div><div class="skel" style="height:22px;width:55px;border-radius:100px;"></div></div>
+      <div class="skel" style="height:12px;width:60%;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Add/Edit Drawer ────────────────────────────────────────────── -->
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="Item editor">
+  <div class="drawer" id="drawer">
+    <div class="drawer-header">
+      <h2 class="drawer-title" id="drawer-title">Add Item</h2>
+      <button class="btn-close" id="btn-close" aria-label="Close">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="drawer-alert" id="drawer-alert"></div>
+
+    <form id="item-form" novalidate>
+      <input type="hidden" id="edit-id">
+
+      <div class="form-row">
+        <label for="f-name">Item name</label>
+        <input type="text" id="f-name" class="field-input" placeholder="e.g. Angle grinder, 7-gallon canning pot…" required>
+      </div>
+
+      <div class="form-row-2">
+        <div class="form-row" style="margin-bottom:0;">
+          <label for="f-cat">Category</label>
+          <select id="f-cat" class="field-input">
+            <option value="general">General / Tools</option>
+            <option value="landscape">Landscape & Gardening</option>
+            <option value="cooking">Cooking & Baking</option>
+            <option value="canning">Canning & Preservation</option>
+            <option value="auto">Auto & Small Engine</option>
+            <option value="plumbing">Plumbing</option>
+            <option value="electrical">Electrical</option>
+            <option value="solar">Solar & Off-Grid</option>
+            <option value="animals">Animals & Livestock</option>
+            <option value="building">Building & Renovation</option>
+            <option value="self-sufficiency">Other Self-Sufficiency</option>
+          </select>
+        </div>
+        <div class="form-row" style="margin-bottom:0;">
+          <label for="f-cond">Condition</label>
+          <select id="f-cond" class="field-input">
+            <option value="good">Good</option>
+            <option value="new">New</option>
+            <option value="fair">Fair</option>
+            <option value="poor">Poor / Needs repair</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label for="f-qty">Quantity <span class="opt">(optional)</span></label>
+        <input type="text" id="f-qty" class="field-input" placeholder="e.g. 1, 3 rolls, 50 ft…">
+      </div>
+
+      <div class="form-row">
+        <label for="f-notes">Notes <span class="opt">(optional)</span></label>
+        <textarea id="f-notes" class="field-input" placeholder="Brand, model, where you keep it, limitations…"></textarea>
+      </div>
+
+      <!-- Image upload (Pro only) -->
+      <div class="form-row" id="image-row">
+        <label>Photo <span class="opt">(optional)</span></label>
+        <div id="upload-area"></div>
+      </div>
+
+      <!-- Delete confirm -->
+      <div class="confirm-delete" id="confirm-delete">
+        <span class="confirm-delete-text">Delete this item? This can't be undone.</span>
+        <button type="button" class="btn-cancel-delete" id="btn-cancel-delete">Cancel</button>
+        <button type="button" class="btn-confirm-delete" id="btn-confirm-delete">Delete</button>
+      </div>
+
+      <div class="drawer-footer">
+        <button type="button" class="btn-secondary" id="btn-drawer-cancel">Cancel</button>
+        <button type="submit" class="btn-primary" id="btn-save">
+          <span class="btn-label">Save Item</span>
+          <span class="spin"></span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script type="module">
+import { requireAuth, getProfile, signOut, supabase } from '/js/auth.js'
+import { createCheckoutSession } from '/js/api.js'
+
+// ── Category metadata ─────────────────────────────────────────────
+const CATS = {
+  'general':         { label: 'General / Tools',        icon: '🔨' },
+  'landscape':       { label: 'Landscape & Gardening',  icon: '🌿' },
+  'cooking':         { label: 'Cooking & Baking',        icon: '🍳' },
+  'canning':         { label: 'Canning & Preservation',  icon: '🫙' },
+  'auto':            { label: 'Auto & Small Engine',     icon: '🔧' },
+  'plumbing':        { label: 'Plumbing',                icon: '🚿' },
+  'electrical':      { label: 'Electrical',               icon: '⚡' },
+  'solar':           { label: 'Solar & Off-Grid',        icon: '☀️' },
+  'animals':         { label: 'Animals & Livestock',     icon: '🐄' },
+  'building':        { label: 'Building & Renovation',   icon: '🪵' },
+  'self-sufficiency':{ label: 'Other Self-Sufficiency',  icon: '🌱' },
+}
+const COND_LABELS = { new: 'New', good: 'Good', fair: 'Fair', poor: 'Poor' }
+
+function esc(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+}
+
+// ── State ─────────────────────────────────────────────────────────
+let allItems   = []
+let isPro      = false
+let userId     = null
+let editingId  = null
+let uploadFile = null
+let uploadPreviewUrl = null
+
+// ── Init ──────────────────────────────────────────────────────────
+const session = await requireAuth()
+if (!session) throw new Error('Not authenticated')
+userId = session.user.id
+
+const profile = await getProfile()
+isPro = profile?.subscription_tier === 'pro'
+
+renderNav(profile, session.user.email)
+renderUploadArea()
+await loadItems()
+
+document.getElementById('loading').style.display = 'none'
+document.getElementById('main').style.display = 'block'
+
+if (!isPro) {
+  document.getElementById('pro-upsell').style.display = 'flex'
+}
+
+// ── Nav ───────────────────────────────────────────────────────────
+function renderNav(profile, email) {
+  const name  = esc(profile?.display_name || email?.split('@')[0] || 'Account')
+  const tier  = isPro ? '<span class="tier-badge tier-pro">Pro</span>' : '<span class="tier-badge tier-free">Free</span>'
+  document.getElementById('nav-user').innerHTML = `
+    <span class="nav-user-name">${name}</span>
+    ${tier}
+    <button class="btn-signout" id="btn-signout">Sign out</button>
+  `
+  document.getElementById('btn-signout').addEventListener('click', () => signOut())
+}
+
+// ── Load items ────────────────────────────────────────────────────
+async function loadItems() {
+  const db = await supabase()
+  const { data, error } = await db
+    .from('inventory_items')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    console.error('Error loading inventory:', error)
+    allItems = []
+  } else {
+    allItems = data || []
+  }
+  applyFilters()
+}
+
+// ── Filter & render ───────────────────────────────────────────────
+function applyFilters() {
+  const q    = document.getElementById('search-input').value.trim().toLowerCase()
+  const cat  = document.getElementById('filter-cat').value
+  const cond = document.getElementById('filter-cond').value
+
+  let items = allItems
+  if (q)    items = items.filter(i => i.name.toLowerCase().includes(q) || (i.notes||'').toLowerCase().includes(q))
+  if (cat)  items = items.filter(i => i.category === cat)
+  if (cond) items = items.filter(i => i.condition === cond)
+
+  renderGrid(items)
+  const n = items.length
+  document.getElementById('item-count').textContent = n === 0 ? '' : `${n} item${n === 1 ? '' : 's'}`
+}
+
+document.getElementById('search-input').addEventListener('input', applyFilters)
+document.getElementById('filter-cat').addEventListener('change', applyFilters)
+document.getElementById('filter-cond').addEventListener('change', applyFilters)
+
+// ── Render grid ───────────────────────────────────────────────────
+function renderGrid(items) {
+  const grid = document.getElementById('item-grid')
+
+  if (items.length === 0) {
+    const isFiltered = document.getElementById('search-input').value ||
+                       document.getElementById('filter-cat').value ||
+                       document.getElementById('filter-cond').value
+    grid.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">${isFiltered ? '🔍' : '📦'}</div>
+        <div class="empty-heading">${isFiltered ? 'No items match' : 'Your inventory is empty'}</div>
+        <p class="empty-sub">${isFiltered ? 'Try a different search or filter.' : 'Add the tools and supplies you have on hand. Rootstock will use them in MacGuyver mode to suggest substitutions.'}</p>
+        ${!isFiltered ? '<button class="btn-add" onclick="document.getElementById(\'btn-add\').click()">Add your first item</button>' : ''}
+      </div>
+    `
+    return
+  }
+
+  grid.innerHTML = items.map(item => {
+    const cat   = CATS[item.category] || CATS['general']
+    const cond  = item.condition || 'good'
+    const hasImg = item.image_url
+    const bodyOpen  = hasImg ? '<div class="item-body">' : ''
+    const bodyClose = hasImg ? '</div>' : ''
+
+    return `
+      <div class="item-card${hasImg ? ' has-image' : ''}" data-id="${item.id}">
+        ${hasImg ? `<img src="${esc(item.image_url)}" alt="${esc(item.name)}" class="item-img" loading="lazy">` : ''}
+        ${bodyOpen}
+        <div class="item-card-top">
+          <span class="item-name">${esc(item.name)}</span>
+          <div class="item-actions">
+            <button class="btn-icon" title="Edit" data-edit="${item.id}">
+              <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M9.5 2.5l2 2-7 7H2.5v-2l7-7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+            </button>
+            <button class="btn-icon delete" title="Delete" data-delete="${item.id}">
+              <svg width="12" height="13" viewBox="0 0 12 14" fill="none"><path d="M1 3h10M4 3V2h4v1M3 3l.5 9h5l.5-9H3z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="item-meta">
+          <span class="item-badge badge-cat">${cat.icon} ${esc(cat.label)}</span>
+          ${item.quantity ? `<span class="item-badge badge-qty">× ${esc(item.quantity)}</span>` : ''}
+          <span class="item-badge badge-cond-${cond}">${COND_LABELS[cond] || cond}</span>
+        </div>
+        ${item.notes ? `<p class="item-notes">${esc(item.notes)}</p>` : ''}
+        ${bodyClose}
+      </div>
+    `
+  }).join('')
+
+  // Wire up edit/delete buttons
+  grid.querySelectorAll('[data-edit]').forEach(btn => {
+    btn.addEventListener('click', () => openEdit(btn.dataset.edit))
+  })
+  grid.querySelectorAll('[data-delete]').forEach(btn => {
+    btn.addEventListener('click', () => openDeleteConfirm(btn.dataset.delete))
+  })
+}
+
+// ── Drawer open/close ─────────────────────────────────────────────
+function openAdd() {
+  editingId = null
+  uploadFile = null
+  uploadPreviewUrl = null
+  document.getElementById('drawer-title').textContent = 'Add Item'
+  document.getElementById('btn-save').querySelector('.btn-label').textContent = 'Save Item'
+  document.getElementById('item-form').reset()
+  document.getElementById('edit-id').value = ''
+  document.getElementById('confirm-delete').classList.remove('show')
+  clearAlert()
+  renderUploadArea()
+  openOverlay()
+}
+
+function openEdit(id) {
+  const item = allItems.find(i => i.id === id)
+  if (!item) return
+
+  editingId = id
+  uploadFile = null
+  uploadPreviewUrl = item.image_url || null
+
+  document.getElementById('drawer-title').textContent = 'Edit Item'
+  document.getElementById('btn-save').querySelector('.btn-label').textContent = 'Save Changes'
+  document.getElementById('edit-id').value = id
+  document.getElementById('f-name').value  = item.name || ''
+  document.getElementById('f-cat').value   = item.category || 'general'
+  document.getElementById('f-cond').value  = item.condition || 'good'
+  document.getElementById('f-qty').value   = item.quantity || ''
+  document.getElementById('f-notes').value = item.notes || ''
+  document.getElementById('confirm-delete').classList.remove('show')
+  clearAlert()
+  renderUploadArea()
+  openOverlay()
+}
+
+function openDeleteConfirm(id) {
+  // Open edit drawer with delete confirm shown
+  openEdit(id)
+  setTimeout(() => {
+    document.getElementById('confirm-delete').classList.add('show')
+  }, 50)
+}
+
+function openOverlay() {
+  document.getElementById('overlay').classList.add('open')
+  document.body.style.overflow = 'hidden'
+  setTimeout(() => document.getElementById('f-name').focus(), 100)
+}
+
+function closeOverlay() {
+  document.getElementById('overlay').classList.remove('open')
+  document.body.style.overflow = ''
+}
+
+document.getElementById('btn-add').addEventListener('click', openAdd)
+document.getElementById('btn-close').addEventListener('click', closeOverlay)
+document.getElementById('btn-drawer-cancel').addEventListener('click', closeOverlay)
+document.getElementById('overlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeOverlay() })
+
+// ── Upgrade button ────────────────────────────────────────────────
+document.getElementById('btn-upgrade-upsell').addEventListener('click', async (e) => {
+  e.preventDefault()
+  try {
+    const { url } = await createCheckoutSession()
+    window.location.href = url
+  } catch (err) {
+    console.error(err)
+  }
+})
+
+// ── Delete confirm ────────────────────────────────────────────────
+document.getElementById('btn-cancel-delete').addEventListener('click', () => {
+  document.getElementById('confirm-delete').classList.remove('show')
+})
+document.getElementById('btn-confirm-delete').addEventListener('click', async () => {
+  const id = document.getElementById('edit-id').value
+  if (!id) return
+  await deleteItem(id)
+})
+
+async function deleteItem(id) {
+  const db = await supabase()
+  const item = allItems.find(i => i.id === id)
+
+  // Delete storage image if present
+  if (item?.image_url) {
+    const path = item.image_url.split('/inventory-images/').pop()
+    if (path) await db.storage.from('inventory-images').remove([path])
+  }
+
+  const { error } = await db.from('inventory_items').delete().eq('id', id).eq('user_id', userId)
+  if (error) { showAlert('Delete failed. Please try again.', 'error'); return }
+
+  allItems = allItems.filter(i => i.id !== id)
+  closeOverlay()
+  applyFilters()
+}
+
+// ── Image upload area ─────────────────────────────────────────────
+function renderUploadArea() {
+  const area = document.getElementById('upload-area')
+
+  if (!isPro) {
+    area.innerHTML = `
+      <div class="upload-pro-lock">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="flex-shrink:0;"><rect x="3" y="8" width="12" height="9" rx="2" stroke="#A0845C" stroke-width="1.5"/><path d="M6 8V6a3 3 0 016 0v2" stroke="#A0845C" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <p class="upload-pro-lock-text">Photo uploads are a <strong>Pro feature</strong>. <a href="#" id="lock-upgrade">Upgrade to Pro</a> to attach photos to your inventory.</p>
+      </div>
+    `
+    document.getElementById('lock-upgrade')?.addEventListener('click', async (e) => {
+      e.preventDefault()
+      const { url } = await createCheckoutSession()
+      window.location.href = url
+    })
+    return
+  }
+
+  if (uploadPreviewUrl) {
+    area.innerHTML = `
+      <div class="upload-preview">
+        <img src="${esc(uploadPreviewUrl)}" alt="Preview">
+        <button type="button" class="upload-preview-remove" id="btn-remove-img" aria-label="Remove photo">×</button>
+      </div>
+    `
+    document.getElementById('btn-remove-img').addEventListener('click', () => {
+      uploadFile = null
+      uploadPreviewUrl = null
+      renderUploadArea()
+    })
+    return
+  }
+
+  area.innerHTML = `
+    <label class="upload-zone" id="upload-zone">
+      <input type="file" id="file-input" accept="image/*">
+      <div class="upload-icon">📷</div>
+      <p class="upload-label"><strong>Click to upload</strong> or drag and drop<br>JPG, PNG, WEBP · max 5 MB</p>
+    </label>
+  `
+  const zone  = document.getElementById('upload-zone')
+  const input = document.getElementById('file-input')
+
+  input.addEventListener('change', () => handleFile(input.files[0]))
+  zone.addEventListener('dragover',  e => { e.preventDefault(); zone.classList.add('drag-over') })
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'))
+  zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.classList.remove('drag-over')
+    handleFile(e.dataTransfer.files[0])
+  })
+}
+
+function handleFile(file) {
+  if (!file) return
+  if (file.size > 5 * 1024 * 1024) { showAlert('Image must be under 5 MB.', 'error'); return }
+  uploadFile = file
+  uploadPreviewUrl = URL.createObjectURL(file)
+  renderUploadArea()
+}
+
+// ── Save (insert/update) ──────────────────────────────────────────
+document.getElementById('item-form').addEventListener('submit', async (e) => {
+  e.preventDefault()
+  clearAlert()
+
+  const name  = document.getElementById('f-name').value.trim()
+  if (!name) { showAlert('Item name is required.', 'error'); return }
+
+  const btn = document.getElementById('btn-save')
+  btn.classList.add('loading')
+  btn.disabled = true
+
+  try {
+    const db = await supabase()
+    let imageUrl = editingId ? (allItems.find(i => i.id === editingId)?.image_url || null) : null
+
+    // Upload new image if provided
+    if (isPro && uploadFile) {
+      const ext  = uploadFile.name.split('.').pop().toLowerCase()
+      const path = `${userId}/${Date.now()}.${ext}`
+      const { error: upErr } = await db.storage.from('inventory-images').upload(path, uploadFile, { upsert: false })
+      if (upErr) throw new Error('Image upload failed: ' + upErr.message)
+
+      const { data: urlData } = db.storage.from('inventory-images').getPublicUrl(path)
+      imageUrl = urlData.publicUrl
+
+      // Delete old image if editing and replacing
+      if (editingId) {
+        const oldItem = allItems.find(i => i.id === editingId)
+        if (oldItem?.image_url && oldItem.image_url !== imageUrl) {
+          const oldPath = oldItem.image_url.split('/inventory-images/').pop()
+          if (oldPath) await db.storage.from('inventory-images').remove([oldPath])
+        }
+      }
+    }
+    // If image was removed (preview cleared, no new file)
+    if (isPro && !uploadFile && !uploadPreviewUrl && editingId) {
+      const oldItem = allItems.find(i => i.id === editingId)
+      if (oldItem?.image_url) {
+        const oldPath = oldItem.image_url.split('/inventory-images/').pop()
+        if (oldPath) await db.storage.from('inventory-images').remove([oldPath])
+      }
+      imageUrl = null
+    }
+
+    const payload = {
+      user_id:   userId,
+      name:      name,
+      category:  document.getElementById('f-cat').value,
+      condition: document.getElementById('f-cond').value,
+      quantity:  document.getElementById('f-qty').value.trim() || null,
+      notes:     document.getElementById('f-notes').value.trim() || null,
+      image_url: imageUrl,
+    }
+
+    if (editingId) {
+      const { data, error } = await db.from('inventory_items').update(payload).eq('id', editingId).eq('user_id', userId).select().single()
+      if (error) throw error
+      allItems = allItems.map(i => i.id === editingId ? data : i)
+    } else {
+      const { data, error } = await db.from('inventory_items').insert(payload).select().single()
+      if (error) throw error
+      allItems = [data, ...allItems]
+    }
+
+    closeOverlay()
+    applyFilters()
+  } catch (err) {
+    showAlert(err.message || 'Save failed. Please try again.', 'error')
+  } finally {
+    btn.classList.remove('loading')
+    btn.disabled = false
+  }
+})
+
+// ── Alert helpers ─────────────────────────────────────────────────
+function showAlert(msg, type = 'error') {
+  const el = document.getElementById('drawer-alert')
+  el.textContent = msg
+  el.className = `drawer-alert show ${type}`
+}
+function clearAlert() {
+  const el = document.getElementById('drawer-alert')
+  el.className = 'drawer-alert'
+  el.textContent = ''
+}
+</script>
+</body>
+</html>
