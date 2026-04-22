@@ -23,7 +23,7 @@ export default async function ProjectPage({ params }: { params: { id: string } }
 
       {/* Header */}
       <div>
-        <Link href="/app/dashboard" className="text-xs text-[#6b6b58] hover:text-[#1f3d0c] mb-4 block">
+        <Link href="/dashboard" className="text-xs text-[#6b6b58] hover:text-[#1f3d0c] mb-4 block">
           ← Back to projects
         </Link>
         <h1 className="font-serif text-2xl md:text-3xl text-[#1f3d0c] mb-2">{guide.title}</h1>

@@ -1,9 +1,16 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Leaf, Loader2, ArrowRight, ChevronDown } from 'lucide-react'
-import Link from 'next/link'
+import { ArrowRight, ChevronDown, RefreshCw } from 'lucide-react'
 import { CATEGORIES, SUBCATEGORIES } from '@/lib/constants'
+
+const LOADING_STEPS = [
+  'Analyzing your project...',
+  'Consulting safety protocols...',
+  'Writing your step-by-step guide...',
+  'Adding expert tips and tool list...',
+  'Finalizing your guide...',
+]
 
 export default function NewProjectPage() {
   const router = useRouter()
@@ -14,7 +21,16 @@ export default function NewProjectPage() {
   const [macguyver, setMacguyver]     = useState(false)
   const [inventory, setInventory]     = useState('')
   const [loading, setLoading]         = useState(false)
+  const [loadStep, setLoadStep]       = useState(0)
   const [error, setError]             = useState<string|null>(null)
+
+  useEffect(() => {
+    if (!loading) { setLoadStep(0); return }
+    const id = setInterval(() => {
+      setLoadStep(s => Math.min(s + 1, LOADING_STEPS.length - 1))
+    }, 5000)
+    return () => clearInterval(id)
+  }, [loading])
 
   const subcats = SUBCATEGORIES.filter(s => s.categoryId === category)
 
@@ -41,7 +57,7 @@ export default function NewProjectPage() {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
-      router.push(`/app/project/${data.id}`)
+      router.push(`/project/${data.id}`)
     } catch (err: any) {
       setError(err.message)
       setLoading(false)
@@ -149,25 +165,57 @@ export default function NewProjectPage() {
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl p-3">
-            {error}
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+            <p className="text-sm text-red-700 font-medium mb-1">Something went wrong</p>
+            <p className="text-xs text-red-600 mb-3">{error}</p>
+            <button
+              type="button"
+              onClick={() => setError(null)}
+              className="flex items-center gap-1.5 text-xs font-medium text-red-700
+                hover:text-red-900 transition-colors"
+            >
+              <RefreshCw size={12} /> Try again
+            </button>
           </div>
         )}
 
-        <button type="submit" disabled={loading || !category || !description.trim()}
-          className="w-full bg-[#1f3d0c] text-[#C0DD97] font-medium py-3 rounded-xl
-            hover:bg-[#3B6D11] transition-colors text-sm disabled:opacity-50
-            flex items-center justify-center gap-2">
-          {loading
-            ? <><Loader2 size={15} className="animate-spin" /> Generating your guide...</>
-            : <><ArrowRight size={15} /> Generate Guide</>
-          }
-        </button>
-
         {loading && (
-          <p className="text-center text-xs text-[#6b6b58]">
-            This takes 15–30 seconds. Rootstock is building your expert guide...
-          </p>
+          <div className="card p-6 text-center">
+            {/* Step label */}
+            <p className="text-sm font-medium text-[#1f3d0c] mb-4 min-h-[1.25rem] transition-all">
+              {LOADING_STEPS[loadStep]}
+            </p>
+
+            {/* Progress bar */}
+            <div className="w-full bg-[#5C4A2A]/10 rounded-full h-1.5 mb-4">
+              <div
+                className="bg-[#3B6D11] h-1.5 rounded-full transition-all duration-1000"
+                style={{ width: `${((loadStep + 1) / LOADING_STEPS.length) * 100}%` }}
+              />
+            </div>
+
+            {/* Step dots */}
+            <div className="flex justify-center gap-1.5">
+              {LOADING_STEPS.map((_, i) => (
+                <div
+                  key={i}
+                  className={`w-1.5 h-1.5 rounded-full transition-colors duration-500
+                    ${i <= loadStep ? 'bg-[#3B6D11]' : 'bg-[#5C4A2A]/20'}`}
+                />
+              ))}
+            </div>
+
+            <p className="text-xs text-[#6b6b58] mt-4">This takes 15–30 seconds</p>
+          </div>
+        )}
+
+        {!loading && (
+          <button type="submit" disabled={!category || !description.trim()}
+            className="w-full bg-[#1f3d0c] text-[#C0DD97] font-medium py-3 rounded-xl
+              hover:bg-[#3B6D11] transition-colors text-sm disabled:opacity-50
+              flex items-center justify-center gap-2">
+            <ArrowRight size={15} /> Generate Guide
+          </button>
         )}
       </form>
     </div>

@@ -23,7 +23,10 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  if (!user && request.nextUrl.pathname.startsWith('/app')) {
+  const protectedPrefixes = ['/dashboard', '/project', '/inventory', '/journal', '/forum', '/upgrade', '/settings']
+  const isProtected = protectedPrefixes.some(p => request.nextUrl.pathname.startsWith(p))
+
+  if (!user && isProtected) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
@@ -31,12 +34,22 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname === '/login' ||
     request.nextUrl.pathname === '/signup'
   )) {
-    return NextResponse.redirect(new URL('/app/dashboard', request.url))
+    return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
   return supabaseResponse
 }
 
 export const config = {
-  matcher: ['/app/:path*', '/login', '/signup'],
+  matcher: [
+    '/dashboard/:path*',
+    '/project/:path*',
+    '/inventory/:path*',
+    '/journal/:path*',
+    '/forum/:path*',
+    '/upgrade/:path*',
+    '/settings/:path*',
+    '/login',
+    '/signup',
+  ],
 }

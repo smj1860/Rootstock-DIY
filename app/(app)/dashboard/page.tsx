@@ -53,7 +53,7 @@ export default async function Dashboard() {
             </p>
           )}
         </div>
-        <Link href={atLimit ? '/app/upgrade' : '/app/project/new'}
+        <Link href={atLimit ? '/upgrade' : '/project/new'}
           className="flex items-center gap-2 bg-[#1f3d0c] text-[#C0DD97]
             font-medium px-4 py-2.5 rounded-xl hover:bg-[#3B6D11]
             transition-colors text-sm">
@@ -68,7 +68,7 @@ export default async function Dashboard() {
           <p className="text-5xl mb-4">🌱</p>
           <p className="font-serif text-lg text-[#1f3d0c] mb-2">Start your first project</p>
           <p className="text-sm text-[#6b6b58] mb-6">Pick a category and let Rootstock guide you.</p>
-          <Link href="/app/project/new"
+          <Link href="/project/new"
             className="inline-flex items-center gap-2 bg-[#1f3d0c] text-[#C0DD97]
               font-medium px-5 py-2.5 rounded-xl hover:bg-[#3B6D11] transition-colors text-sm">
             <PlusCircle size={15} /> Create first project
@@ -80,7 +80,7 @@ export default async function Dashboard() {
       {projects && projects.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {projects.map(project => (
-            <Link key={project.id} href={`/app/project/${project.id}`}
+            <Link key={project.id} href={`/project/${project.id}`}
               className="card p-5 block hover:shadow-md transition-all
                 hover:-translate-y-0.5 group">
               <div className="flex items-start justify-between gap-2 mb-3">
@@ -115,7 +115,7 @@ export default async function Dashboard() {
             <p className="font-serif text-white text-lg">Unlock unlimited projects</p>
             <p className="text-[#C0DD97] text-sm mt-1">Upgrade to Pro for $9/month — MacGuyver mode included.</p>
           </div>
-          <Link href="/app/upgrade"
+          <Link href="/upgrade"
             className="bg-[#C0DD97] text-[#1f3d0c] font-medium px-5 py-2.5
               rounded-xl text-sm hover:bg-white transition-colors flex items-center gap-2">
             <Crown size={14} /> Upgrade →
